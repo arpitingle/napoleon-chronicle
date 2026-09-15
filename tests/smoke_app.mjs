@@ -133,5 +133,22 @@ await wait(120);
 ok('retry clears the banner', get('archiveError').hidden === true, get('archiveError').innerHTML.slice(0, 90));
 ok('retry keeps the current date', get('curDate').textContent === '16 October 1813');
 
+console.log('\nmanifest failure must be loud too');
+FAIL.add('data/index.json');
+get('enterBtn').disabled = false;
+get('archiveError').hidden = true;
+const ctx2 = vm.createContext({
+  document, fetch: fetchStub, console, setTimeout,
+  window: { scrollTo() {} },
+  navigator: { clipboard: { writeText() {} } },
+  localStorage: { _d: {}, getItem(k) { return this._d[k] ?? null; }, setItem(k, v) { this._d[k] = String(v); } },
+});
+vm.runInContext(SRC, ctx2, { filename: 'app.js' });
+await wait(250);
+ok('enter button is not left enabled', get('enterBtn').disabled === true);
+ok('button says why', /unavailable/i.test(get('enterBtn').textContent || ''), get('enterBtn').textContent);
+ok('banner names the manifest', /index\.json/.test(get('archiveError').innerHTML));
+ok('banner is visible', get('archiveError').hidden === false);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

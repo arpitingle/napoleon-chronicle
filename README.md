@@ -22,7 +22,7 @@ python3 sources/build_index.py        # rebuild the manifest + era shards
 python3 sources/verify.py             # data integrity + content smells (errors fail)
 python3 sources/verify.py --strict    # warnings fail too — use this in CI
 python3 sources/verify.py --check-urls  # also HEAD every archive.org source link
-node tests/smoke_app.mjs              # headless test of app.js itself (25 checks)
+node tests/smoke_app.mjs              # headless test of app.js (Node 20.11+, 29 checks)
 ```
 
 `verify.py` is a regression net: every check is pinned to a defect observed in
