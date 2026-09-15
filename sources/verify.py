@@ -192,12 +192,20 @@ def check_coverage(posts, idx):
 
 def check_content(posts, idx):
     """Smells observed in this archive - a rebuild must not reintroduce them."""
+    LQ, DQ, DOT = chr(8220), chr(34), chr(46)
+    STRAY = "".join(re.escape(c) for c in (DQ, chr(39), DOT, "*", chr(8212), chr(171), chr(8226), chr(60)))
     pats = [("leaked running head (9+ capitals)", r"\b[A-Z]{9,}\b"),
             ("OCR digit inside a word", r"[A-Za-z]+\d+[A-Za-z]+"),
             ("spaced year (e.g. '18 12')", r"\b1[78]\s\d\d\b"),
             ("HTML or scrape boilerplate", r"<[a-z/]|style-scope|Internet Archive"),
             ("replacement character", "[\ufffd]"),
-            ("doubled space", r"\S  \S")]
+            ("doubled space", r"\S  \S"),
+            ("mid-word case break (OCR)", r"[a-z][A-Z][a-z]"),
+            ("stray punctuation after the opening quote",
+             "^[" + LQ + DQ + "]*[ ]*[" + STRAY + "]"),
+            ("leading dateline (Month, year)",
+             "^[" + LQ + DQ + r"\"]*\s*\b(January|February|March|April|May|June|July|"
+             r"August|September|October|November|December),\s*1[78]\d\d")]
     for label, pat in pats:
         rx = re.compile(pat)
         hits = [p["id"] for p in posts if rx.search(p.get("displayText") or "")]
