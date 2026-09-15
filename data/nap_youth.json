@@ -1,0 +1,27 @@
+[
+ {
+  "id": "nap-17910123-01",
+  "author": "Napoleon Bonaparte",
+  "handle": "@bonaparte",
+  "accountType": "person",
+  "faction": "Corsica",
+  "date": "1791-01-23",
+  "timeLabel": "TIME UNCERTAIN",
+  "timePrecision": "day",
+  "location": "Ajaccio",
+  "originalLanguage": "French",
+  "displayText": "“From Bonifacio to Cape Corse, from Ajaccio to Bastia, nothing rises but a chorus of curses against you. Your friends hide, your kin disown you. […]”",
+  "sourceTitle": "Letter to Matteo Buttafoco, deputy of Corsica, January 1791",
+  "archive": "Masson & Schütz, Napoléon manuscrits inédits 1786–1791 (Paris, 1908) — public domain (French)",
+  "sourceUrl": "https://archive.org/details/napolonmanuscr00napo",
+  "documentType": "letter",
+  "evidenceType": "TRANSLATION",
+  "dateCertainty": "approximate",
+  "eventIds": [
+   "youth-corsica"
+  ],
+  "editorialStatus": "verified",
+  "context": "The 21-year-old denounces Corsica's deputy: treason itemized in letters of blood. Dated January 1791 in the edition. Translated for Chronicle from the public-domain French; original below.",
+  "originalText": "Depuis Bonifacio au cap Corse, depuis Ajaccio à Bastia, ce n'est qu'un chorus d'imprécations contre vous. Vos amis se cachent, vos parents vous désavouent."
+ }
+]

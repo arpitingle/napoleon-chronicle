@@ -1,0 +1,202 @@
+{
+ "meta": {
+  "app": "Chronicle: Napoleon",
+  "version": "0.3.0 — full arc 1791–1821",
+  "editorialPolicy": "Published feed accepts only editorialStatus=verified. English from pre-1930 public-domain translations (Bingham 1884, Tarbell 1897, 1856 Josephine correspondence, Wellington 1902 despatches, Las Cases 1823, Warden 1816); French originals added where held. Later memoirs labelled, never live. Approximate dates shown honestly.",
+  "coverageNote": "Counts are generated into data/index.json meta.coverageNote by sources/build_index.py — do not hand-write them here. See EDITORIAL.md for the one open provenance item: the modern 'Translated for Chronicle' renderings."
+ },
+ "events": [
+  {
+   "id": "youth-1795",
+   "label": "Unemployed General",
+   "date": "1795-09-06",
+   "blurb": "Paris, sick and scheming, weeks before Vendémiaire."
+  },
+  {
+   "id": "italy-1796",
+   "label": "Italy 1796",
+   "date": "1796-04-12",
+   "blurb": "Montenotte to Arcole: six victories, 15,000 prisoners, a legend made."
+  },
+  {
+   "id": "campo-1797",
+   "label": "Leoben & Campo Formio",
+   "date": "1797-10-17",
+   "blurb": "A general dictates peace to an emperor."
+  },
+  {
+   "id": "egypt-1798",
+   "label": "Egypt & Syria",
+   "date": "1798-07-21",
+   "blurb": "Pyramids, plague, Acre — glory and dead end."
+  },
+  {
+   "id": "brumaire-1799",
+   "label": "Return & Brumaire",
+   "date": "1799-11-09",
+   "blurb": "Fréjus landing to Saint-Cloud: the Republic ends."
+  },
+  {
+   "id": "marengo-1800",
+   "label": "Marengo",
+   "date": "1800-06-14",
+   "blurb": "One afternoon saves the Consulate."
+  },
+  {
+   "id": "consulate-1802",
+   "label": "Peace of Amiens",
+   "date": "1802-03-27",
+   "blurb": "Eleven months of peace — and Josephine's summers."
+  },
+  {
+   "id": "boulogne-1803",
+   "label": "Boulogne Invasion Camp",
+   "date": "1803-11-12",
+   "blurb": "Flatboats, tides, and England watched."
+  },
+  {
+   "id": "empire-1804",
+   "label": "Empire Proclaimed",
+   "date": "1804-12-02",
+   "blurb": "The Pope, the eagles, the new throne."
+  },
+  {
+   "id": "austerlitz-1805",
+   "label": "Austerlitz",
+   "date": "1805-12-02",
+   "blurb": "The sun of Austerlitz: two emperors beaten in four hours."
+  },
+  {
+   "id": "jena-1806",
+   "label": "Jena–Auerstedt",
+   "date": "1806-10-14",
+   "blurb": "Prussia annihilated in seven days."
+  },
+  {
+   "id": "eylau-1807",
+   "label": "Eylau",
+   "date": "1807-02-08",
+   "blurb": "Snow, corpses, and a victory that felt like defeat."
+  },
+  {
+   "id": "friedland-1807",
+   "label": "Friedland",
+   "date": "1807-06-14",
+   "blurb": "The victory that bought Tilsit."
+  },
+  {
+   "id": "tilsit-1807",
+   "label": "Tilsit",
+   "date": "1807-07-07",
+   "blurb": "Two emperors on a raft; Europe carved up."
+  },
+  {
+   "id": "spain-1808",
+   "label": "Spain Ulcer",
+   "date": "1808-05-02",
+   "blurb": "Bayonne deals, Dos de Mayo, Bailén shock."
+  },
+  {
+   "id": "erfurt-1808",
+   "label": "Erfurt",
+   "date": "1808-10-14",
+   "blurb": "Kings as audience; Alexander courted."
+  },
+  {
+   "id": "wagram-1809",
+   "label": "Wagram",
+   "date": "1809-07-06",
+   "blurb": "The Danube decides; Schönbrunn dictates."
+  },
+  {
+   "id": "marie-louise-1810",
+   "label": "New Marriage",
+   "date": "1810-04-02",
+   "blurb": "Josephine put away; an archduchess wed."
+  },
+  {
+   "id": "russia-1812",
+   "label": "Russia 1812",
+   "date": "1812-09-14",
+   "blurb": "Moscow entered, Moscow burned, the wreck retreats."
+  },
+  {
+   "id": "leipzig-1813",
+   "label": "Leipzig",
+   "date": "1813-10-16",
+   "blurb": "The Battle of the Nations; the Empire cracks."
+  },
+  {
+   "id": "france-1814",
+   "label": "France 1814",
+   "date": "1814-02-10",
+   "blurb": "Six Days of genius against invasion."
+  },
+  {
+   "id": "fontainebleau-1814",
+   "label": "Fontainebleau",
+   "date": "1814-04-11",
+   "blurb": "Abdication, farewell, Elba."
+  },
+  {
+   "id": "elba-1814",
+   "label": "Elba",
+   "date": "1815-02-26",
+   "blurb": "An emperor gardens while Europe unmakes his work."
+  },
+  {
+   "id": "waterloo-1815",
+   "label": "Waterloo",
+   "date": "1815-06-18",
+   "blurb": "Ligny, Quatre-Bras, Mont-Saint-Jean — and pursuit."
+  },
+  {
+   "id": "sthelena-1815",
+   "label": "St Helena",
+   "date": "1815-10-15",
+   "blurb": "Landfall, Longwood, dictated memory."
+  },
+  {
+   "id": "corsica-1793",
+   "label": "Corsica & Toulon",
+   "date": "1793-12-19",
+   "blurb": "Toulon retaken through Nelson's opposing lens — and his own French letters."
+  },
+  {
+   "id": "toulon-1793",
+   "label": "Toulon 1793",
+   "date": "1793-12-19",
+   "blurb": "Thirty thousand men, eleven batteries: the gunner's apprenticeship, in French."
+  },
+  {
+   "id": "empire-admin",
+   "label": "Empire Administered",
+   "date": "1810-06-10",
+   "blurb": "Prefects, marshals and ministers: the machine."
+  },
+  {
+   "id": "russia-friction",
+   "label": "Road to 1812",
+   "date": "1810-06-20",
+   "blurb": "Erfurt promises fraying toward war."
+  },
+  {
+   "id": "holland-1810",
+   "label": "Holland Absorbed",
+   "date": "1810-07-01",
+   "blurb": "Louis scolded into abdication."
+  },
+  {
+   "id": "peninsular-1808",
+   "label": "Peninsular (Allied view)",
+   "date": "1812-07-22",
+   "blurb": "Wellington's war, in his own dated words."
+  },
+  {
+   "id": "youth-corsica",
+   "label": "Corsican Writings",
+   "date": "1791-01-23",
+   "blurb": "Lieutenant's pen: pamphlets, dialogues, denunciations."
+  }
+ ]
+}

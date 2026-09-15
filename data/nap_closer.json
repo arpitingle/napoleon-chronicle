@@ -1,0 +1,77 @@
+[
+ {
+  "id": "nap-18210415-01",
+  "author": "Napoleon Bonaparte",
+  "handle": "@bonaparte",
+  "accountType": "person",
+  "faction": "St Helena",
+  "date": "1821-04-15",
+  "timeLabel": "TIME UNCERTAIN",
+  "timePrecision": "day",
+  "location": "Longwood",
+  "originalLanguage": "French",
+  "displayText": "“I die prematurely, assassinated by the English oligarchy and its hired killer; the English people will soon avenge me. […]”",
+  "sourceTitle": "Testament, article 5, April 1821",
+  "archive": "Antommarchi, Derniers momens de Napoléon (Paris, 1825) — public domain (French)",
+  "sourceUrl": "https://archive.org/details/derniersmomensd02antogoog",
+  "documentType": "testament",
+  "evidenceType": "TRANSLATION",
+  "dateCertainty": "approximate",
+  "eventIds": [
+   "sthelena-1815"
+  ],
+  "editorialStatus": "verified",
+  "context": "Dictated mid-April 1821; widely printed within months. Date certain to the month; day approximate. Translated for Chronicle from the public-domain French; original below.",
+  "originalText": "Je meurs prématurément, assassiné par l'oligarchie anglaise et son sicaire; le peuple anglais ne tardera pas à me venger."
+ },
+ {
+  "id": "nap-18210415-02",
+  "author": "Napoleon Bonaparte",
+  "handle": "@bonaparte",
+  "accountType": "person",
+  "faction": "St Helena",
+  "date": "1821-04-15",
+  "timeLabel": "TIME UNCERTAIN",
+  "timePrecision": "day",
+  "location": "Longwood",
+  "originalLanguage": "French",
+  "displayText": "“I desire my ashes to rest on the banks of the Seine, amid the French people I loved so well. […]”",
+  "sourceTitle": "Codicil on burial, April 1821",
+  "archive": "Antommarchi, Derniers momens de Napoléon (Paris, 1825) — public domain (French)",
+  "sourceUrl": "https://archive.org/details/derniersmomensd02antogoog",
+  "documentType": "testament",
+  "evidenceType": "TRANSLATION",
+  "dateCertainty": "approximate",
+  "eventIds": [
+   "sthelena-1815"
+  ],
+  "editorialStatus": "verified",
+  "context": "Holograph codicil, sealed with his arms; the governor refused it. Same dating note as above. Translated for Chronicle from the public-domain French; original below.",
+  "originalText": "Je désire que mes cendres reposent sur les bords de la Seine, au milieu de ce peuple français que j'ai tant aimé."
+ },
+ {
+  "id": "nap-18210501-03",
+  "author": "Napoleon Bonaparte",
+  "handle": "@bonaparte",
+  "accountType": "person",
+  "faction": "St Helena",
+  "date": "1821-05-01",
+  "timeLabel": "TIME UNCERTAIN",
+  "timePrecision": "day",
+  "location": "Longwood",
+  "originalLanguage": "French",
+  "displayText": "“Tell them the great Napoleon expired in the most deplorable state, wanting everything, abandoned to himself and his glory. […]”",
+  "sourceTitle": "Dictated farewell message, final days",
+  "archive": "Antommarchi, Derniers momens de Napoléon (Paris, 1825) — public domain (French)",
+  "sourceUrl": "https://archive.org/details/derniersmomensd02antogoog",
+  "documentType": "reported speech",
+  "evidenceType": "TRANSLATION",
+  "dateCertainty": "approximate",
+  "eventIds": [
+   "sthelena-1815"
+  ],
+  "editorialStatus": "verified",
+  "context": "Dictated to Antommarchi days before May 5; reported speech via the doctor's journal. Translated for Chronicle from the public-domain French; original below.",
+  "originalText": "Vous leur direz que le grand Napoléon est expiré dans l'état le plus déplorable, manquant de tout, abandonné à lui-même et à sa gloire."
+ }
+]

@@ -1,0 +1,104 @@
+/* Twitter circa 2014 — decluttered */
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:#f5f8fa;color:#292f33;font:14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif}
+/* landing — full-bleed artwork with UI imposed on top */
+#landing{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:40px 16px;background:#111 url("images/napoleon-alps.jpg") center/cover no-repeat;position:relative}
+#landing::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(10,10,10,.62),rgba(10,10,10,.55) 45%,rgba(10,10,10,.72))}
+.landing-box{position:relative;z-index:1;max-width:440px;width:100%;text-align:left;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.bird{font-size:40px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}.landing-box h1{font-size:34px;margin:8px 0;font-weight:700;color:#fff}
+.sub{color:#f0f0f0;font-size:15px}
+.art-credit{position:absolute;z-index:1;right:10px;bottom:8px;max-width:70%;text-align:right;font-size:11px;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.art-credit a{color:#9fd0f5}
+.picker{display:flex;gap:6px;margin:14px 0}
+.picker select{font-size:15px;padding:8px;border:1px solid #e1e8ed;border-radius:4px;background:rgba(255,255,255,.95);color:#111;text-shadow:none}
+#enterBtn{background:#55acee;color:#fff;border:0;border-radius:100px;padding:10px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;text-shadow:none}
+.landing-featured{margin-top:20px}.landing-featured h3{font-size:14px;color:#e8e8e8;margin:0 0 6px}
+.landing-featured select{width:100%;font-size:14px;padding:9px;border:1px solid #e1e8ed;border-radius:4px;background:rgba(255,255,255,.95);color:#111;text-shadow:none}
+/* nav */
+#topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e1e8ed}
+.nav-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px 12px}
+.nav-logo{font-size:22px}.nav-links{color:#66757f;font-size:14px}
+#backBtn{background:none;border:0;font-size:22px;cursor:pointer;color:#66757f}
+.date-nav{margin-left:auto;display:flex;align-items:center;gap:8px;color:#292f33}
+.date-nav button{background:#e1e8ed;border:0;border-radius:50%;width:26px;height:26px;cursor:pointer}
+.tweet-btn{background:#55acee;color:#fff;border:0;border-radius:100px;padding:7px 16px;font-weight:700;cursor:pointer}
+#eventBanner{background:#e8f4fc;border-bottom:1px solid #cfe6f5;padding:8px;text-align:center;font-size:13px;color:#1b95e0}
+#eventBanner button{background:#fff;border:1px solid #55acee;color:#55acee;border-radius:100px;padding:2px 10px;cursor:pointer}
+/* layout */
+#layout{max-width:880px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,560px);gap:12px;padding:12px;justify-content:center}
+.profile-card,.card{background:#fff;border:1px solid #e1e8ed;border-radius:6px;padding:12px;margin-bottom:12px}
+.profile-cover{background:#55acee;height:70px;border-radius:6px 6px 0 0;margin:-12px -12px 8px}
+.profile-ava{font-size:34px}
+.profile-row{display:flex;gap:8px;align-items:center}
+.gray{color:#8899a6}.mini{display:block;font-size:12px;color:#657786;margin-top:6px}
+.jump-row{display:flex;gap:6px;margin-top:8px}
+.jump-row input{flex:1;border:1px solid #e1e8ed;border-radius:4px;padding:6px;font-size:13px}
+.jump-row button{background:#fff;border:1px solid #55acee;color:#55acee;border-radius:100px;padding:5px 12px;cursor:pointer}
+#timelineHead{padding:2px 4px 8px;font-size:15px}
+#coverageNote{display:block;font-size:12px;color:#8899a6;font-weight:400}
+#feed{border:1px solid #e1e8ed;border-radius:6px;overflow:hidden;background:#fff}
+#feed:empty{display:none}
+/* tweets */
+.post{background:#fff;border:1px solid #e1e8ed;border-top:0;padding:10px 12px;display:flex;gap:10px;cursor:default}
+.post:hover{background:#f5f8fa}
+#feed .post:first-of-type{border-top:1px solid #e1e8ed}
+.avatar{flex:0 0 48px;width:48px;height:48px;border-radius:6px;background:#55acee;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;overflow:hidden}
+.avatar .ava{width:48px;height:48px;object-fit:cover;display:block}
+.tweet-text .more{color:#55acee;text-decoration:none;font-size:13px}
+.thread{border:1px solid #e1e8ed;border-radius:6px;overflow:hidden;background:#fff;margin-bottom:12px}
+.thread .post{border:0;border-bottom:1px solid #e1e8ed;border-radius:0;margin:0;position:relative;padding-left:22px}
+.thread .post:last-child{border-bottom:0}
+.thread .post::before{content:"";position:absolute;left:34px;top:0;bottom:0;width:2px;background:#ccd6dd}
+.thread .post:last-child::before{bottom:auto;height:58px}
+.thread .post .avatar{width:38px;height:38px;flex-basis:38px;font-size:16px}
+.thread .post .avatar .ava{width:38px;height:38px}
+.tweet-body{flex:1;min-width:0}
+.tweet-head{font-size:14px}.tweet-head button.author:hover{text-decoration:underline}
+.tweet-head .h,.tweet-head .t{color:#8899a6;font-size:13px}
+.tweet-text{font-size:14px;margin:2px 0 4px;word-wrap:break-word}
+.tweet-src{font-size:12px;color:#8899a6}
+.tweet-src .ev{border:1px solid #e1e8ed;border-radius:3px;padding:0 4px;font-size:11px;background:#f5f8fa}
+.orig{display:none;font-size:13px;background:#f5f8fa;border:1px solid #e1e8ed;border-radius:4px;padding:8px;margin:6px 0}
+.orig.show{display:block}
+.ctx{display:none;font-size:13px;color:#292f33;border-top:1px solid #e1e8ed;margin-top:6px;padding-top:6px}
+.ctx.show{display:block}.ctx a{color:#55acee}
+.tweet-actions{display:flex;gap:28px;margin-top:6px;color:#aab8c2;font-size:12px;font-weight:700}
+.tweet-actions button{background:none;border:0;color:#aab8c2;font-size:12px;font-weight:700;cursor:pointer;padding:0}
+.tweet-actions button:hover{color:#55acee}
+.follow-btn{background:#fff!important;border:1px solid #55acee!important;color:#55acee!important;border-radius:100px!important;padding:3px 12px!important}
+.trends button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #e1e8ed;padding:7px 0;cursor:pointer;color:#55acee;font-size:13px}
+.trends button small{display:block;color:#8899a6}
+.key{margin:6px 0;padding-left:18px;color:#657786;font-size:12px}
+.mini-select{width:100%;margin-top:8px;border:1px solid #e1e8ed;border-radius:4px;padding:6px}
+#emptyState{background:#fff;border:1px solid #e1e8ed;padding:24px;text-align:center;color:#8899a6}
+#profileModal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:20}
+#profileCard{background:#fff;border-radius:6px;padding:20px;max-width:420px;width:90%}
+.spoiler{filter:blur(4px);cursor:pointer}
+@media(max-width:900px){#layout{grid-template-columns:1fr}#leftCol{display:none}.nav-links{display:none}}
+/* ---- Phase 0: archive integrity banner, control bar, a11y ---- */
+#archiveError{position:sticky;top:0;z-index:30;background:#fff3f3;border-bottom:1px solid #f0c0c0;color:#8a1f1f;padding:8px 12px;font-size:13px}
+#archiveError b{display:block}
+#archiveError ul{margin:4px 0 0;padding-left:18px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+#archiveError button{background:#fff;border:1px solid #d05555;color:#8a1f1f;border-radius:100px;padding:2px 10px;cursor:pointer;margin-left:6px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:6px 10px;z-index:40}
+.skip:focus{left:8px;top:8px;border:1px solid #55acee;border-radius:4px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.note{color:#e6e6e6;font-size:12px;margin:6px 0 0}
+.controls{margin-top:8px}
+.controls .jump-row{margin-top:0}
+.controls .mini{margin-top:8px}
+:focus-visible{outline:2px solid #55acee;outline-offset:2px}
+button.author{background:none;border:0;padding:0;font:inherit;font-weight:700;color:#292f33;cursor:pointer}
+button.author:hover{text-decoration:underline;color:#55acee}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:900px){
+  #layout{grid-template-columns:1fr}
+  .profile-cover,.profile-row{display:none}
+  .profile-card{padding:8px;margin-bottom:8px}
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .controls .jump-row{flex:1 1 200px}
+  .controls .mini{margin-top:0;white-space:nowrap}
+  .mini-select{width:auto;margin-top:0}
+  .nav-links{display:none}
+}
