@@ -89,13 +89,16 @@ ok('no error banner on a healthy load', get('archiveError').hidden === true);
 
 console.log('\nboot date must not be empty');
 const busiest = Object.keys(index.dateCount).sort()
+  // lowest wins ties (matches bestDayIn's strict-greater scan over sorted keys)
   .reduce((a, k) => (a === null || index.dateCount[k] > index.dateCount[a] ? k : a), null);
-ok('busiest date resolves from the manifest', !!busiest, JSON.stringify(busiest));
 ok('boot date carries documents', index.dateCount[busiest] > 0, busiest + ' has ' + index.dateCount[busiest]);
 ok('landing note counts documents', /\d+ documents/.test(get('landingNote').textContent || ''));
 
 console.log('\ndocumented day (' + busiest + ')');
 const [by, bm, bd] = busiest.split('-').map(Number);
+const appDefault = runIn('iso(cur)');
+ok('busiest date resolves from the manifest', !!busiest, JSON.stringify(busiest));
+ok('boot opens on the earliest of the busiest dates', appDefault === busiest, 'cur=' + appDefault + ' vs tiebreak=' + busiest);
 await runIn(`enter({d:${bd},m:${bm},y:${by}})`);
 ok('feed has cards', get('feed').children.length > 0, 'nodes=' + get('feed').children.length);
 ok('tweet count matches the manifest', Number(get('tweetCount').textContent) === index.dateCount[busiest],
@@ -172,6 +175,7 @@ const fullShown = recs.filter(r => cards.some(c => c.innerHTML.includes(r.displa
 ok('every quote renders in full', fullShown === recs.length, fullShown + '/' + recs.length + ' in full');
 ok('no card asks you to expand a short quote', cards.every(c => !c.innerHTML.includes('Show more')));
 ok('source line shows without a click', cards.every(c => /tweet-meta/.test(c.innerHTML)));
+ok('why-it-matters frame renders on every card', cards.every(c => /class="frame"/.test(c.innerHTML) && /Situation/.test(c.innerHTML) && /Why it matters/.test(c.innerHTML) && /chain-next|chain-end/.test(c.innerHTML)));
 ok('longest excerpt is inside the clamp', Math.max(...recs.map(r => r.displayText.length)) <= 420,
    'max ' + Math.max(...recs.map(r => r.displayText.length)) + ' chars');
 
