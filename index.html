@@ -3,41 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Napoleon's real letters, orders and proclamations, 1789-1821, as a timeline.">
 <title>Chronicle — Napoleon</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
 <a class="skip" href="#feedCol">Skip to the feed</a>
 <div id="archiveError" hidden role="alert"></div>
+
 <!-- LANDING -->
 <div id="landing">
   <div class="landing-box">
-    <div class="bird">🐦</div>
+    <div class="brand">🐦 <span>Chronicle</span></div>
     <h1>See what's happening<br>with Napoleon.</h1>
-    <p class="sub">Every Tweet is a real letter, order, or proclamation — 1789 to 1821.</p>
-    <p class="note" id="landingNote">Reading the archive…</p>
+    <p class="sub">Every Tweet is a real letter, order or proclamation — 1789 to 1821.</p>
+
     <div class="picker">
-      <select id="selDay"></select>
-      <select id="selMonth"></select>
-      <select id="selYear"></select>
+      <label><span>Year</span><select id="selYear"></select></label>
+      <label><span>Month</span><select id="selMonth"></select></label>
     </div>
-    <button id="enterBtn" disabled>Reading archive…</button>
+    <button id="enterBtn" disabled>Reading the archive…</button>
+    <p class="note" id="landingNote">Reading the archive…</p>
+
     <div class="landing-featured">
-      <h3>Or jump to a moment</h3>
+      <label for="featuredSelect">Or jump to a moment</label>
       <select id="featuredSelect"></select>
     </div>
   </div>
-  <div class="art-credit">Bonaparte Crossing the Alps, 20 May 1800 · Jacques-Louis David, Versailles · <a href="https://commons.wikimedia.org/wiki/File:Jacques_Louis_David_-_Bonaparte_franchissant_le_Grand_Saint-Bernard,_20_mai_1800_-_Google_Art_Project.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> · public domain</div>
+  <div class="art-credit">The Coronation of Napoleon, 1805–07 · Jacques-Louis David, Louvre<br>
+    <a href="https://commons.wikimedia.org/wiki/File:Jacques-Louis_David_-_The_Coronation_of_Napoleon_(1805-1807).jpg" target="_blank" rel="noopener">Wikimedia Commons</a> · public domain</div>
 </div>
 
 <!-- APP -->
 <div id="app" hidden>
   <header id="topbar">
     <div class="nav-inner">
-      <button id="backBtn" title="Back" aria-label="Back to the cover">‹</button>
+      <button id="backBtn" title="Back to the cover" aria-label="Back to the cover">‹</button>
       <span class="nav-logo">🐦</span>
-      <span class="nav-links"><b>Home</b></span>
       <div class="date-nav">
         <button id="prevDay" aria-label="Previous day">‹</button>
         <strong id="curDate">…</strong>
@@ -51,25 +54,40 @@
 
   <main id="layout">
     <aside id="leftCol">
-      <div class="profile-card">
-        <div class="profile-cover"></div>
-        <div class="profile-row"><div class="profile-ava">🇫🇷</div>
-          <div><b id="profilePeriod">France · 1796</b><br><span class="gray">@napoleon · <span id="tweetCount"></span> Tweets</span></div>
+      <div class="side-card">
+        <div class="side-head">
+          <div class="profile-ava">🇫🇷</div>
+          <div>
+            <b id="profilePeriod">France</b>
+            <div class="gray">@napoleon · <span id="tweetCount">0</span> Tweets this date</div>
+          </div>
         </div>
-        <div class="controls">
+
+        <div class="field">
+          <label class="lbl" for="jumpDate">Jump to a date</label>
           <div class="jump-row">
-            <label class="vh" for="jumpDate">Jump to a date</label>
             <input type="date" id="jumpDate" min="1789-01-01" max="1821-12-31">
             <button id="jumpBtn">Go</button>
           </div>
-          <label class="mini"><input type="checkbox" id="spoilerToggle"> Spoiler-free</label>
-          <select id="followFilter" class="mini-select" aria-label="Which accounts to show"><option value="all">All accounts</option><option value="following">Following only</option></select>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="followFilter">Accounts</label>
+          <select id="followFilter"><option value="all">All accounts</option><option value="following">Following only</option></select>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Reading mode</label>
+          <label class="check"><input type="checkbox" id="spoilerToggle"> Spoiler-free</label>
         </div>
       </div>
     </aside>
 
     <section id="feedCol" aria-labelledby="timelineTitle">
-      <div id="timelineHead"><b id="timelineTitle">Latest Tweets</b><span id="coverageNote" aria-live="polite"></span></div>
+      <div id="timelineHead">
+        <strong id="timelineTitle">Latest Tweets</strong>
+        <span id="coverageNote" aria-live="polite"></span>
+      </div>
       <div id="feed" aria-label="Tweets for this date"></div>
       <div id="emptyState" hidden></div>
     </section>

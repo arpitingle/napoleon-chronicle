@@ -1,104 +1,192 @@
-/* Twitter circa 2014 — decluttered */
+/* Chronicle — Napoleon. Single stylesheet, no build step.
+   Type scale 13/15/17, spacing on a 4px grid, one accent colour. */
+:root{
+  --bg:#f5f8fa; --card:#fff; --line:#e6ecf0; --line-soft:#eff3f5;
+  --ink:#14171a; --ink-soft:#41505c; --muted:#657786;
+  --accent:#1b95e0; --accent-dark:#1373b0; --accent-soft:#e8f4fc;
+  --danger:#8a1f1f; --danger-bg:#fff3f3; --danger-line:#f0c0c0;
+  --r:8px; --r-sm:5px; --shadow:0 1px 2px rgba(20,23,26,.06);
+}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:#f5f8fa;color:#292f33;font:14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif}
-/* landing — full-bleed artwork with UI imposed on top */
-#landing{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:40px 16px;background:#111 url("images/napoleon-alps.jpg") center/cover no-repeat;position:relative}
-#landing::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(10,10,10,.62),rgba(10,10,10,.55) 45%,rgba(10,10,10,.72))}
-.landing-box{position:relative;z-index:1;max-width:440px;width:100%;text-align:left;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}
-.bird{font-size:40px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}.landing-box h1{font-size:34px;margin:8px 0;font-weight:700;color:#fff}
-.sub{color:#f0f0f0;font-size:15px}
-.art-credit{position:absolute;z-index:1;right:10px;bottom:8px;max-width:70%;text-align:right;font-size:11px;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.8)}
-.art-credit a{color:#9fd0f5}
-.picker{display:flex;gap:6px;margin:14px 0}
-.picker select{font-size:15px;padding:8px;border:1px solid #e1e8ed;border-radius:4px;background:rgba(255,255,255,.95);color:#111;text-shadow:none}
-#enterBtn{background:#55acee;color:#fff;border:0;border-radius:100px;padding:10px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;text-shadow:none}
-.landing-featured{margin-top:20px}.landing-featured h3{font-size:14px;color:#e8e8e8;margin:0 0 6px}
-.landing-featured select{width:100%;font-size:14px;padding:9px;border:1px solid #e1e8ed;border-radius:4px;background:rgba(255,255,255,.95);color:#111;text-shadow:none}
-/* nav */
-#topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e1e8ed}
-.nav-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px 12px}
-.nav-logo{font-size:22px}.nav-links{color:#66757f;font-size:14px}
-#backBtn{background:none;border:0;font-size:22px;cursor:pointer;color:#66757f}
-.date-nav{margin-left:auto;display:flex;align-items:center;gap:8px;color:#292f33}
-.date-nav button{background:#e1e8ed;border:0;border-radius:50%;width:26px;height:26px;cursor:pointer}
-.tweet-btn{background:#55acee;color:#fff;border:0;border-radius:100px;padding:7px 16px;font-weight:700;cursor:pointer}
-#eventBanner{background:#e8f4fc;border-bottom:1px solid #cfe6f5;padding:8px;text-align:center;font-size:13px;color:#1b95e0}
-#eventBanner button{background:#fff;border:1px solid #55acee;color:#55acee;border-radius:100px;padding:2px 10px;cursor:pointer}
-/* layout */
-#layout{max-width:880px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,560px);gap:12px;padding:12px;justify-content:center}
-.profile-card,.card{background:#fff;border:1px solid #e1e8ed;border-radius:6px;padding:12px;margin-bottom:12px}
-.profile-cover{background:#55acee;height:70px;border-radius:6px 6px 0 0;margin:-12px -12px 8px}
-.profile-ava{font-size:34px}
-.profile-row{display:flex;gap:8px;align-items:center}
-.gray{color:#8899a6}.mini{display:block;font-size:12px;color:#657786;margin-top:6px}
-.jump-row{display:flex;gap:6px;margin-top:8px}
-.jump-row input{flex:1;border:1px solid #e1e8ed;border-radius:4px;padding:6px;font-size:13px}
-.jump-row button{background:#fff;border:1px solid #55acee;color:#55acee;border-radius:100px;padding:5px 12px;cursor:pointer}
-#timelineHead{padding:2px 4px 8px;font-size:15px}
-#coverageNote{display:block;font-size:12px;color:#8899a6;font-weight:400}
-#feed{border:1px solid #e1e8ed;border-radius:6px;overflow:hidden;background:#fff}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* ---------- landing ---------- */
+#landing{min-height:100vh;display:grid;place-items:center;padding:48px 20px;
+  background:#0e0f11 url("images/napoleon-coronation.jpg") 50% 40%/cover no-repeat;position:relative}
+#landing::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,11,13,.74),rgba(10,11,13,.58) 45%,rgba(10,11,13,.86))}
+.landing-box{position:relative;z-index:1;max-width:420px;width:100%;color:#fff}
+.brand{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.82)}
+.brand span{letter-spacing:.18em}
+.landing-box h1{font-size:32px;line-height:1.2;font-weight:800;margin:14px 0 10px;color:#fff;
+  text-shadow:0 1px 14px rgba(0,0,0,.55)}
+.sub{margin:0 0 24px;font-size:15px;color:rgba(255,255,255,.9)}
+.picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.picker label{display:block}
+.picker label span{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:5px}
+select,input[type=date]{width:100%;font:inherit;font-size:15px;color:var(--ink);background:#fff;
+  border:1px solid transparent;border-radius:var(--r-sm);padding:10px 11px;cursor:pointer}
+select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
+#landing select{box-shadow:0 2px 10px rgba(0,0,0,.28)}
+#enterBtn{width:100%;font:inherit;font-size:16px;font-weight:700;color:#fff;background:var(--accent);
+  border:0;border-radius:var(--r-sm);padding:13px 20px;cursor:pointer;box-shadow:0 3px 14px rgba(0,0,0,.3)}
+#enterBtn:hover:not(:disabled){background:var(--accent-dark)}
+#enterBtn:disabled{background:rgba(255,255,255,.2);color:rgba(255,255,255,.72);cursor:progress;box-shadow:none}
+.note{margin:12px 0 0;font-size:12.5px;color:rgba(255,255,255,.72);text-align:center}
+.landing-featured{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16)}
+.landing-featured label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:6px}
+.landing-featured select{box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.art-credit{position:absolute;z-index:1;right:14px;bottom:12px;max-width:60%;text-align:right;
+  font-size:11px;line-height:1.5;color:rgba(255,255,255,.6)}
+.art-credit a{color:rgba(190,222,247,.9)}
+
+/* ---------- top bar ---------- */
+#topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.96);
+  backdrop-filter:saturate(150%) blur(6px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:9px 14px}
+#backBtn{background:none;border:0;font-size:24px;line-height:1;color:var(--muted);cursor:pointer;padding:0 2px}
+#backBtn:hover{color:var(--accent)}
+.nav-logo{font-size:19px}
+.date-nav{margin-left:auto;display:flex;align-items:center;gap:10px}
+.date-nav strong{font-size:15px;font-weight:700;letter-spacing:.01em}
+.date-nav button{background:var(--line-soft);border:1px solid var(--line);color:var(--ink-soft);
+  border-radius:50%;width:28px;height:28px;line-height:1;font-size:15px;cursor:pointer}
+.date-nav button:hover{background:#e4eaee;color:var(--accent)}
+.tweet-btn{font:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--accent);
+  border:0;border-radius:100px;padding:7px 16px;cursor:pointer}
+.tweet-btn:hover{background:var(--accent-dark)}
+
+/* ---------- shell ---------- */
+#eventBanner{background:var(--accent-soft);border-bottom:1px solid #cfe6f5;padding:9px 14px;
+  font-size:13.5px;color:var(--accent-dark);display:flex;gap:10px;align-items:center;justify-content:center}
+#eventBanner b{color:var(--accent-dark)}
+#eventBanner button{font:inherit;font-size:13px;background:#fff;border:1px solid var(--accent);
+  color:var(--accent);border-radius:100px;padding:3px 12px;cursor:pointer;white-space:nowrap}
+#layout{max-width:900px;margin:0 auto;display:grid;grid-template-columns:248px minmax(0,1fr);
+  gap:16px;padding:18px 14px 40px;align-items:start}
+
+/* ---------- sidebar ---------- */
+.side-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;box-shadow:var(--shadow);position:sticky;top:64px}
+.side-head{display:flex;gap:10px;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+.profile-ava{font-size:26px;line-height:1;background:var(--bg);border:1px solid var(--line);
+  border-radius:50%;width:40px;height:40px;display:grid;place-items:center;flex:0 0 40px}
+.side-head b{display:block;font-size:15px}
+.side-head .gray{font-size:12.5px;line-height:1.35}
+.field{margin-top:14px}
+.lbl{display:block;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px}
+.field select{border:1px solid var(--line)}
+.field select:hover{border-color:#c8d3da}
+.jump-row{display:flex;gap:8px}
+.jump-row input{flex:1;border:1px solid var(--line);font-size:13.5px;padding:8px 9px}
+.jump-row button{font:inherit;font-size:13.5px;background:#fff;border:1px solid var(--accent);
+  color:var(--accent);border-radius:100px;padding:7px 15px;cursor:pointer;font-weight:600}
+.jump-row button:hover{background:var(--accent-soft)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-soft);cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.gray{color:var(--muted)}
+
+/* ---------- feed head ---------- */
+#timelineHead{padding:0 2px 12px}
+#timelineHead strong{font-size:17px;font-weight:800;letter-spacing:-.01em}
+#coverageNote{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+
+/* ---------- tweets ---------- */
+#feed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 #feed:empty{display:none}
-/* tweets */
-.post{background:#fff;border:1px solid #e1e8ed;border-top:0;padding:10px 12px;display:flex;gap:10px;cursor:default}
-.post:hover{background:#f5f8fa}
-#feed .post:first-of-type{border-top:1px solid #e1e8ed}
-.avatar{flex:0 0 48px;width:48px;height:48px;border-radius:6px;background:#55acee;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;overflow:hidden}
-.avatar .ava{width:48px;height:48px;object-fit:cover;display:block}
-.tweet-text .more{color:#55acee;text-decoration:none;font-size:13px}
-.thread{border:1px solid #e1e8ed;border-radius:6px;overflow:hidden;background:#fff;margin-bottom:12px}
-.thread .post{border:0;border-bottom:1px solid #e1e8ed;border-radius:0;margin:0;position:relative;padding-left:22px}
-.thread .post:last-child{border-bottom:0}
-.thread .post::before{content:"";position:absolute;left:34px;top:0;bottom:0;width:2px;background:#ccd6dd}
-.thread .post:last-child::before{bottom:auto;height:58px}
-.thread .post .avatar{width:38px;height:38px;flex-basis:38px;font-size:16px}
-.thread .post .avatar .ava{width:38px;height:38px}
+.post{display:flex;gap:12px;padding:16px;background:var(--card);border-top:1px solid var(--line-soft)}
+.post:first-child{border-top:0}
+.post:hover{background:#fbfdfe}
+.avatar{flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-size:17px;font-weight:700;overflow:hidden}
+.avatar .ava{width:44px;height:44px;object-fit:cover;display:block}
 .tweet-body{flex:1;min-width:0}
-.tweet-head{font-size:14px}.tweet-head button.author:hover{text-decoration:underline}
-.tweet-head .h,.tweet-head .t{color:#8899a6;font-size:13px}
-.tweet-text{font-size:14px;margin:2px 0 4px;word-wrap:break-word}
-.tweet-src{font-size:12px;color:#8899a6}
-.tweet-src .ev{border:1px solid #e1e8ed;border-radius:3px;padding:0 4px;font-size:11px;background:#f5f8fa}
-.orig{display:none;font-size:13px;background:#f5f8fa;border:1px solid #e1e8ed;border-radius:4px;padding:8px;margin:6px 0}
-.orig.show{display:block}
-.ctx{display:none;font-size:13px;color:#292f33;border-top:1px solid #e1e8ed;margin-top:6px;padding-top:6px}
-.ctx.show{display:block}.ctx a{color:#55acee}
-.tweet-actions{display:flex;gap:28px;margin-top:6px;color:#aab8c2;font-size:12px;font-weight:700}
-.tweet-actions button{background:none;border:0;color:#aab8c2;font-size:12px;font-weight:700;cursor:pointer;padding:0}
-.tweet-actions button:hover{color:#55acee}
-.follow-btn{background:#fff!important;border:1px solid #55acee!important;color:#55acee!important;border-radius:100px!important;padding:3px 12px!important}
-.trends button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #e1e8ed;padding:7px 0;cursor:pointer;color:#55acee;font-size:13px}
-.trends button small{display:block;color:#8899a6}
-.key{margin:6px 0;padding-left:18px;color:#657786;font-size:12px}
-.mini-select{width:100%;margin-top:8px;border:1px solid #e1e8ed;border-radius:4px;padding:6px}
-#emptyState{background:#fff;border:1px solid #e1e8ed;padding:24px;text-align:center;color:#8899a6}
-#profileModal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:20}
-#profileCard{background:#fff;border-radius:6px;padding:20px;max-width:420px;width:90%}
-.spoiler{filter:blur(4px);cursor:pointer}
-@media(max-width:900px){#layout{grid-template-columns:1fr}#leftCol{display:none}.nav-links{display:none}}
-/* ---- Phase 0: archive integrity banner, control bar, a11y ---- */
-#archiveError{position:sticky;top:0;z-index:30;background:#fff3f3;border-bottom:1px solid #f0c0c0;color:#8a1f1f;padding:8px 12px;font-size:13px}
-#archiveError b{display:block}
-#archiveError ul{margin:4px 0 0;padding-left:18px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
-#archiveError button{background:#fff;border:1px solid #d05555;color:#8a1f1f;border-radius:100px;padding:2px 10px;cursor:pointer;margin-left:6px}
-.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:6px 10px;z-index:40}
-.skip:focus{left:8px;top:8px;border:1px solid #55acee;border-radius:4px}
+.tweet-head{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;font-size:15px;line-height:1.3}
+.tweet-head .h,.tweet-head .t{color:var(--muted);font-size:13.5px}
+.tweet-head .t{font-weight:400}
+.author{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
+.author:hover{color:var(--accent);text-decoration:underline}
+.verified{color:var(--accent);font-size:13px}
+.tweet-text{margin:5px 0 8px;font-size:15px;line-height:1.55;color:var(--ink);overflow-wrap:anywhere}
+.tweet-text .more{color:var(--accent);text-decoration:none;font-size:13.5px;white-space:nowrap;font-weight:600}
+.tweet-meta{font-size:13px;color:var(--ink-soft);margin-bottom:2px}
+.tweet-src{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tweet-src .ev{border:1px solid var(--line);border-radius:100px;padding:1px 8px;background:var(--bg);white-space:nowrap}
+.tweet-actions{display:flex;gap:22px;margin-top:10px}
+.tweet-actions button{background:none;border:0;padding:0;font:inherit;font-size:13px;font-weight:600;
+  color:var(--muted);cursor:pointer}
+.tweet-actions button:hover{color:var(--accent)}
+.follow-btn{float:right;background:#fff;border:1px solid var(--accent);color:var(--accent);
+  border-radius:100px;padding:3px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.follow-btn:hover{background:var(--accent-soft)}
+.orig,.ctx{display:none;margin-top:10px;padding:11px 13px;font-size:13.5px;line-height:1.55;
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-soft)}
+.orig.show,.ctx.show{display:block}
+.orig b,.ctx b{color:var(--ink)}
+
+/* ---------- threads ---------- */
+.thread{background:var(--card);border-top:1px solid var(--line-soft)}
+.thread .post{position:relative;border-top:0;border-bottom:1px solid var(--line-soft);padding-left:22px}
+.thread .post:last-child{border-bottom:0}
+.thread .post::before{content:"";position:absolute;left:39px;top:0;bottom:0;width:2px;background:var(--line);z-index:0}
+.thread .post:last-child::before{bottom:auto;height:52px}
+.thread .post .avatar{width:36px;height:36px;flex-basis:36px;font-size:15px}
+.thread .post .avatar .ava{width:36px;height:36px}
+/* The spine must hide BEHIND the avatar, never paint over it:
+   position:relative+z-index on .post pins each ::before to its own post,
+   and a positioned avatar with z-index sits above the line. */
+.thread .post .avatar,.thread .post .avatar .ava{position:relative;z-index:1}
+.tweet-head .t .tag{font-weight:600;color:var(--muted)}
+
+/* ---------- empty / error / modal ---------- */
+#emptyState{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:32px 24px;text-align:center;color:var(--muted);font-size:14px}
+#emptyState p{margin:0 0 10px}
+#emptyState p:last-child{margin-bottom:0}
+#emptyState a{font-weight:600}
+#archiveError{position:sticky;top:0;z-index:30;background:var(--danger-bg);
+  border-bottom:1px solid var(--danger-line);color:var(--danger);padding:10px 14px;font-size:13px}
+#archiveError b{display:block;margin-bottom:2px}
+#archiveError ul{margin:6px 0 0;padding-left:20px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+#archiveError button{font:inherit;background:#fff;border:1px solid #d05555;color:var(--danger);
+  border-radius:100px;padding:3px 12px;cursor:pointer;margin-left:8px}
+#profileModal{position:fixed;inset:0;background:rgba(20,23,26,.55);display:grid;place-items:center;
+  z-index:20;padding:20px;backdrop-filter:blur(2px)}
+#profileCard{background:#fff;border-radius:var(--r);padding:22px;max-width:440px;width:100%;
+  max-height:80vh;overflow:auto;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+#profileCard h3{font-size:19px}
+#profileCard ul{padding-left:20px;font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+#profileCard p{font-size:14px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:8px 12px;z-index:40;border-radius:0 0 var(--r-sm) 0}
+.skip:focus{left:0;top:0;border:1px solid var(--accent)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.note{color:#e6e6e6;font-size:12px;margin:6px 0 0}
-.controls{margin-top:8px}
-.controls .jump-row{margin-top:0}
-.controls .mini{margin-top:8px}
-:focus-visible{outline:2px solid #55acee;outline-offset:2px}
-button.author{background:none;border:0;padding:0;font:inherit;font-weight:700;color:#292f33;cursor:pointer}
-button.author:hover{text-decoration:underline;color:#55acee}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media(max-width:900px){
-  #layout{grid-template-columns:1fr}
-  .profile-cover,.profile-row{display:none}
-  .profile-card{padding:8px;margin-bottom:8px}
-  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .controls .jump-row{flex:1 1 200px}
-  .controls .mini{margin-top:0;white-space:nowrap}
-  .mini-select{width:auto;margin-top:0}
-  .nav-links{display:none}
+
+/* ---------- responsive ---------- */
+@media(max-width:860px){
+  #layout{grid-template-columns:1fr;gap:12px;padding:12px 10px 32px}
+  .side-card{position:static;padding:12px;display:grid;grid-template-columns:1fr;gap:0}
+  .side-head{padding-bottom:10px}
+  .field{margin-top:10px}
+  #landing{padding:32px 16px;align-items:start;place-items:start center}
+  .landing-box h1{font-size:26px}
+  .art-credit{position:static;max-width:none;text-align:left;margin-top:28px}
+  .nav-inner{padding:8px 10px;gap:8px}
+  .date-nav strong{font-size:14px}
+  .post{padding:14px}
 }
+@media(max-width:420px){
+  .picker{grid-template-columns:1fr 1fr}
+  .landing-box h1{font-size:23px}
+  #topbar .tweet-btn{padding:6px 12px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

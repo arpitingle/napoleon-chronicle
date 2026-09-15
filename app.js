@@ -7,6 +7,7 @@ let followed=new Set(JSON.parse(localStorage.getItem('nap_follow')||'[]'));
 let replayOn=false, ready=false, DEFAULT=null;
 const problems=[];
 const shardCache=new Map();
+const seenIds=new Set();
 const $=s=>document.querySelector(s);
 const ORDER={'MORNING':0,'AFTERNOON':1,'EVENING':2,'TIME UNCERTAIN':3};
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -17,9 +18,11 @@ function saveFollow(){localStorage.setItem('nap_follow',JSON.stringify([...follo
 const EV_SHORT={'ORIGINAL MANUSCRIPT':'📜 manuscript','CONTEMPORARY NEWSPAPER':'📰 newspaper','OFFICIAL RECORD':'🏛 official','CONTEMPORARY TRANSCRIPT':'🗣 transcript','EYEWITNESS ACCOUNT':'👁 eyewitness','LATER MEMOIR':'💭 memoir','TRANSLATION':'🌐 translation','DATE APPROXIMATE':'~ approx date'};
 function avatarHTML(a){const u=AVATAR[a];return u?`<img class="ava" src="${u}" alt="${a}">`:`${a.trim()[0]}`}
 function shortHTML(t){
-  const plain=t.replace(/^“|”$/g,'');
-  if(plain.length<=140)return null;
-  let cut=plain.slice(0,140);const k=cut.lastIndexOf(' ');cut=cut.slice(0,k>100?k:140);
+  /* the archive caps excerpts at ~300 chars (a handful reach ~400), so almost
+     every record can show in full — only genuinely long ones get a Show more */
+  const plain=t.replace(/^“|”$/g,''),LIMIT=420;
+  if(plain.length<=LIMIT)return null;
+  let cut=plain.slice(0,LIMIT);const k=cut.lastIndexOf(' ');cut=cut.slice(0,k>LIMIT*0.7?k:LIMIT);
   return {cut,rest:plain.slice(cut.length)};
 }
 /* ---- archive loading ---- */
@@ -49,6 +52,8 @@ async function loadShard(id){
       if(r.editorialStatus!=='verified'){bad.push(r.id||'?');return}
       const miss=need.filter(k=>!(k in r));
       if(miss.length){bad.push((r.id||'?')+' missing '+miss.join('/'));return}
+      if(seenIds.has(r.id))return;
+      seenIds.add(r.id);
       ok.push(r);
     });
     if(bad.length)noteProblem(`${meta.file}: ${bad.length} record(s) rejected — ${bad.slice(0,2).join('; ')}`);
@@ -83,16 +88,53 @@ async function load(){
   $('#timelineTitle').textContent='Latest Tweets';
   $('#landingNote').textContent=`${INDEX.counts.posts} documents · ${INDEX.counts.dates} dated days · ${INDEX.counts.authors} voices`;
 }
+function monthCounts(y){
+  const out={};
+  Object.keys(INDEX.dateCount).forEach(k=>{
+    if(k.slice(0,4)===String(y)){const m=+k.slice(5,7);out[m]=(out[m]||0)+INDEX.dateCount[k]}
+  });
+  return out;
+}
+function bestDayIn(y,m){
+  /* the fullest documented day inside a month, straight from the manifest */
+  const pre=String(y)+'-'+String(m).padStart(2,'0')+'-';
+  let best=null,bc=-1;
+  Object.keys(INDEX.dateCount).sort().forEach(k=>{
+    if(k.indexOf(pre)===0&&INDEX.dateCount[k]>bc){bc=INDEX.dateCount[k];best=k}
+  });
+  return best;
+}
+function updatePickNote(){
+  const y=+$('#selYear').value,m=+$('#selMonth').value;
+  if(!y||!m)return;
+  const c=monthCounts(y)[m]||0,d=bestDayIn(y,m);
+  $('#landingNote').textContent=c
+    ? `${MONTHS[m-1]} ${y} · ${c} document${c===1?'':'s'} · opens ${fmt(+d.slice(8),+d.slice(5,7),+d.slice(0,4))}`
+    : `${MONTHS[m-1]} ${y} · nothing survives for this month — you will land on the nearest date`;
+}
+function fillMonths(y){
+  const m=$('#selMonth'),c=monthCounts(y),want=+m.value||cur.m;
+  m.innerHTML=MONTHS.map((n,i)=>{
+    const v=i+1,cnt=c[v]||0;
+    return `<option value="${v}" ${v===want?'selected':''}>${n}${cnt?' · '+cnt:' · —'}</option>`;
+  }).join('');
+}
 function initLanding(){
-  const d=$('#selDay'),m=$('#selMonth'),y=$('#selYear'),r=INDEX.appRange;
-  d.innerHTML=Array.from({length:31},(_,i)=>`<option ${i+1===cur.d?'selected':''}>${i+1}</option>`).join('');
-  m.innerHTML=MONTHS.map((n,i)=>`<option value="${i+1}" ${i+1===cur.m?'selected':''}>${n}</option>`).join('');
+  const m=$('#selMonth'),y=$('#selYear'),r=INDEX.appRange;
   const y0=+r.from.slice(0,4),y1=+r.to.slice(0,4);
-  y.innerHTML=Array.from({length:y1-y0+1},(_,i)=>{const v=y0+i;return `<option ${v===cur.y?'selected':''}>${v}</option>`}).join('');
+  y.innerHTML=Array.from({length:y1-y0+1},(_,i)=>y0+i)
+    .map(v=>`<option value="${v}" ${v===cur.y?'selected':''}>${v} · ${INDEX.byYear[v]||0}</option>`).join('');
+  fillMonths(cur.y);
+  y.onchange=()=>{fillMonths(+y.value);updatePickNote()};
+  m.onchange=updatePickNote;
   const fs=$('#featuredSelect');
-  fs.innerHTML='<option value="">— Choose a moment —</option>'+EVENTS.map(ev=>`<option value="${ev.date}">${ev.label} · ${ev.date}</option>`).join('');
+  fs.innerHTML='<option value="">— Choose a moment —</option>'+
+    EVENTS.map(ev=>`<option value="${ev.date}">${ev.label} · ${ev.date}</option>`).join('');
   fs.onchange=()=>{if(fs.value)enter(parseIso(fs.value))};
-  $('#enterBtn').onclick=()=>enter({d:+d.value,m:+m.value,y:+y.value});
+  $('#enterBtn').onclick=()=>{
+    const yy=+y.value,mm=+m.value;
+    enter(parseIso(bestDayIn(yy,mm)||`${yy}-${String(mm).padStart(2,'0')}-01`));
+  };
 }
 function showBanner(ev){
   const b=$('#eventBanner');
@@ -168,21 +210,22 @@ function render(){
 }
 function card(p,spoiler,nth,ofN){
   const d=document.createElement('article');d.className='post'+(ofN>1?' in-thread':'');
-  const v=p.accountType==='person'?'✔':'';
-  const threadTag=ofN>1?` <span class="t">·  ${nth}/${ofN}</span>`:'';
-  const evs=[p.evidenceType,p.dateCertainty==='approximate'?'DATE APPROXIMATE':'',p.originalLanguage!=='English'?'TRANSLATION':''].filter(Boolean).map(e=>`<span class="ev">${EV_SHORT[e]||e.toLowerCase()}</span>`).join(' ');
+  const v=p.accountType==='person'?'<span class="verified">✔</span>':'';
+  const threadTag=ofN>1?`<span class="tag"> · 🧵 ${nth}/${ofN}</span>`:'';
+  const evs=[p.evidenceType,p.dateCertainty==='approximate'?'DATE APPROXIMATE':'',(p.originalLanguage!=='English'&&p.evidenceType!=='TRANSLATION')?'TRANSLATION':''].filter(Boolean).map(e=>`<span class="ev">${EV_SHORT[e]||e.toLowerCase()}</span>`).join('');
   const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
   const txtHtml=sh?`“${redact(sh.cut,spoiler)}… <a href="#" class="more">Show more</a><span class="rest" hidden> ${redact(sh.rest,spoiler)}</span>”`:full;
   const rc=p.reactions?Object.keys(p.reactions).length:0;
   d.innerHTML=`<div class="avatar">${avatarHTML(p.author)}</div>
   <div class="tweet-body">
-    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button> <span style="color:#55acee">${v}</span> <span class="h">${p.handle} · </span><span class="t">${p.timeLabel.toLowerCase()}</span>${threadTag}
-    <button class="follow-btn" style="float:right">${followed.has(p.author)?'Following':'Follow'}</button></div>
+    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span><span class="t">· ${p.timeLabel.toLowerCase()}${threadTag}</span>
+    <button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button></div>
     <div class="tweet-text">${txtHtml}</div>
+    <div class="tweet-meta">${p.sourceTitle}</div>
     ${p.originalText?`<div class="orig"><b>Original (${p.originalLanguage}):</b> ${p.originalText}</div>`:''}
-    <div class="tweet-src">${p.location} · ${evs}</div>
+    <div class="tweet-src">${p.location}${evs?' · '+evs:''}</div>
     <div class="tweet-actions">
-      <button data-k="ctx" aria-expanded="false">Source &amp; context</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">Original</button>':''}<button data-k="share">Share</button>
+      <button data-k="ctx" aria-expanded="false">Source &amp; context</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">French original</button>':''}<button data-k="share">Share</button>
     </div>
     <div class="ctx"><b>Source:</b> ${p.sourceTitle} (<a href="${p.sourceUrl}" target="_blank" rel="noopener">${p.archive}</a>)<br>${redact(p.context||'',spoiler)}${p.reactions?`<br><br>${Object.entries(p.reactions).map(([k,v])=>`— <i>${k}</i>: ${redact(v,spoiler)}`).join('<br>')}`:''}</div>
   </div>`;

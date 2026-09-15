@@ -150,5 +150,30 @@ ok('button says why', /unavailable/i.test(get('enterBtn').textContent || ''), ge
 ok('banner names the manifest', /index\.json/.test(get('archiveError').innerHTML));
 ok('banner is visible', get('archiveError').hidden === false);
 
+console.log('\nUI contract');
+ok('landing offers no day picker', !HTML.includes('selDay'));
+ok('year picker lists years with their counts', /1789 · \d+/.test(get('selYear').innerHTML),
+   (get('selYear').innerHTML.match(/>[^<]+</g) || []).slice(0, 2).join(' '));
+ok('month picker is populated', /January/.test(get('selMonth').innerHTML) && /December/.test(get('selMonth').innerHTML));
+ok('month options carry counts', / · \d+| · —/.test(get('selMonth').innerHTML));
+
+console.log('\nfull text, not two lines');
+const eraId = index.shardByYear[busiest.slice(0, 4)];
+const eraFile = index.shards.find(s => s.id === eraId).file;
+const recs = JSON.parse(fs.readFileSync(path.join(ROOT, eraFile), 'utf8')).filter(r => r.date === busiest);
+const [rby, rbm, rbd] = busiest.split('-').map(Number);
+await runIn(`enter({d:${rbd},m:${rbm},y:${rby}})`);
+// enter twice: the first may interleave with an in-flight retry goTo
+await runIn(`enter({d:${rbd},m:${rbm},y:${rby}})`);
+const cards = [];
+for (const child of get('feed').children) cards.push(...(child.children.length ? child.children : [child]));
+ok('one card per document', cards.length === recs.length, cards.length + ' cards vs ' + recs.length + ' records');
+const fullShown = recs.filter(r => cards.some(c => c.innerHTML.includes(r.displayText))).length;
+ok('every quote renders in full', fullShown === recs.length, fullShown + '/' + recs.length + ' in full');
+ok('no card asks you to expand a short quote', cards.every(c => !c.innerHTML.includes('Show more')));
+ok('source line shows without a click', cards.every(c => /tweet-meta/.test(c.innerHTML)));
+ok('longest excerpt is inside the clamp', Math.max(...recs.map(r => r.displayText.length)) <= 420,
+   'max ' + Math.max(...recs.map(r => r.displayText.length)) + ' chars');
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
