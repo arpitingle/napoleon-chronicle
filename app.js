@@ -208,57 +208,51 @@ function render(){
     if(l&&l.author===p.author&&l.date===p.date)run.push(p);else{flush();run=[p]}});
   flush();
 }
-/* ---- the why-it-matters frame (option 1) ----
-   displayText is never touched. All three lines are derived only from
-   verified fields: cleaned context prose, event/document metadata, and the
-   manifest's date index. No motives, causes or outcomes are invented. */
-function stripProvenance(t){
-  const parts=(t||'').match(/[^.!?]+[.!?]+["\u201d']?|\S[^.!?]*$/g)||[];
-  return parts.map(s=>s.trim()).filter(s=>s&&!/translated for chronicle|english from the|french in the|full text in the|public domain|public-domain/i.test(s)).join(' ');
-}
-function letterLine(ctx,p){
-  const m=ctx.match(/^Letter to (.+?) from (.+?), (\d{4}-\d{2}-\d{2})\.?$/i);
-  if(!m)return ctx;
-  return `A letter to ${m[1].trim()}, written from ${m[2].trim()} on ${fmt(+m[3].slice(8),+m[3].slice(5,7),+m[3].slice(0,4))}.`;
+/* ---- coherent headline (display) vs verbatim quote (one tap down) ----
+   The top line of a card is a CAPTION: either the editor's own context prose,
+   or a line composed from verified fields (addressee / place / date). It is
+   never a rewording of the letter. The exact historical text stays one tap
+   away, unaltered, so nothing is misrepresented. */
+const PROV=/translated for chronicle|english from the|french in the|full text in the|public domain|public-domain/i;
+/* the auto-generated "Letter to X from Y, date." line — reworded, not quoted */
+const LETTERBOILER=/^letter to .+ from .+\d{4}/i;
+function sentencesOf(t){return (t||'').match(/[^.!?]+[.!?]+["\u201d']?|\S[^.!?]*$/g)||[]}
+function addrOf(p){
+  return (p.sourceTitle||'')
+    .replace(/^[\u201c"'\s]+/,'')
+    .replace(/,?\s*\d{4}-\d{2}-\d{2}.*$/,'')
+    .replace(/\b\d{1,2}[A-Za-z]{1,3}\b(?=[,\s]|$)/g,'')
+    .replace(/[*^'"]+/g,'')
+    .replace(/\s{2,}/g,' ')
+    .replace(/\s*,\s*$/,'')
+    .trim();
 }
 const capName=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
-function eventProximity(date){
-  let best=null,bd=Infinity;
-  (EVENTS||[]).forEach(e=>{
-    const n=Math.round((new Date(e.date)-new Date(date))/86400000);
-    if(Math.abs(n)<Math.abs(bd)){bd=n;best=e}
-  });
-  if(!best)return '';
-  if(bd===0)return `on the day of \u201c${best.label}\u201d`;
-  return bd>0?`${bd} day${bd===1?'':'s'} before \u201c${best.label}\u201d`
-             :`${-bd} day${-bd===1?'':'s'} after \u201c${best.label}\u201d`;
-}
-function monthDocs(date){
-  const pre=date.slice(0,7);let n=0;
-  Object.keys(INDEX.dateCount||{}).forEach(k=>{if(k.indexOf(pre)===0)n+=INDEX.dateCount[k]});
-  return n;
-}
-function nextDoc(date){
-  const keys=Object.keys(INDEX.dateCount||{}).sort();
-  for(const k of keys){
-    if(k>date)return {date:k,count:INDEX.dateCount[k],ev:(EVENTS||[]).find(e=>e.date===k)||null};
+function headlineFor(p){
+  const raw=(p.context||'').trim();
+  const sents=sentencesOf(raw).map(s=>s.trim());
+  /* the auto-generated "Letter to X from Y, date." opener — reworded, not quoted */
+  const auto=/^letter to .+ from .+\d{4}/i.test(raw);
+  let prose;
+  if(auto){
+    const start=sents.findIndex(s=>PROV.test(s));
+    prose=start>-1?sents.slice(start+1).filter(s=>!PROV.test(s)):[];
+  }else{
+    prose=sents.filter(s=>s&&!PROV.test(s));
   }
-  return null;
-}
-function frameFor(p){
-  const cleaned=letterLine(stripProvenance(p.context),p);
-  const addr=(p.sourceTitle||'').replace(/^[\u201c"'\s]+/,'');
-  const tm=addr.match(/^To\s+([^,;]+)/i);
-  const who=tm?tm[1].trim():addr.split(',')[0].trim();
-  const situation=cleaned||`${capName(p.documentType||'letter')}${who?' to '+who:''} \u2014 ${p.location||'place unknown'}, ${p.date}.`;
-  const here=(EVENTS||[]).find(e=>(p.eventIds||[]).indexOf(e.id)>-1);
-  let why;
-  if(here)why=`Part of ${here.label} \u2014 ${here.blurb}`;
-  else{
-    const mc=monthDocs(p.date),px=eventProximity(p.date),firm=p.dateCertainty==='approximate'?'approximately':'firmly';
-    why=`Dated ${firm} ${p.date}${who?' \u00b7 addressed to '+who:''} \u00b7 ${mc} document${mc===1?'':'s'} survive${mc===1?'s':''} from this month${px?' \u00b7 '+px:''}`;
+  const when=fmt(+p.date.slice(8),+p.date.slice(5,7),+p.date.slice(0,4));
+  if(prose.length){
+    let h=prose.join(' ').trim();
+    h=h.charAt(0).toUpperCase()+h.slice(1);
+    if(!/[.!?]$/.test(h))h+='.';
+    return h;
   }
-  return {situation:situation,why:why,next:nextDoc(p.date)};
+  const loc=p.location||'place unknown';
+  const lm=raw.match(/^Letter to (.+?) from (.+?), ?\d{4}/i);
+  if(lm)return `To ${lm[1].trim()}, written from ${lm[2].trim()} on ${when}.`;
+  let head=addrOf(p)||capName((p.documentType||'letter').replace(/\s*\(.*\)/,''));
+  head=head.replace(new RegExp('[ ,;:]*'+loc.replace(/[^A-Za-z .'-]/g,'')+'[ ,;:]*$',''),'').replace(/[\s,;:]+$/,'');
+  return `${head} \u00b7 ${loc} \u00b7 ${when}.`;
 }
 function card(p,spoiler,nth,ofN){
   const d=document.createElement('article');d.className='post'+(ofN>1?' in-thread':'');
@@ -268,33 +262,28 @@ function card(p,spoiler,nth,ofN){
   const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
   const txtHtml=sh?`“${redact(sh.cut,spoiler)}… <a href="#" class="more">Show more</a><span class="rest" hidden> ${redact(sh.rest,spoiler)}</span>”`:full;
   const rc=p.reactions?Object.keys(p.reactions).length:0;
-  const f=frameFor(p);
-  const nextHtml=f.next
-    ?`Next document: <button class="chain-next" data-jump="${f.next.date}">${fmt(+f.next.date.slice(8),+f.next.date.slice(5,7),+f.next.date.slice(0,4))}${f.next.ev?' — '+f.next.ev.label:''}</button> (${f.next.count} document${f.next.count===1?'':'s'} that day)`
-    :`<span class="chain-end">No later document survives in this archive.</span>`;
-  const frameHtml=`<div class="frame"><div class="frow"><b>Situation</b><span>${f.situation}</span></div><div class="frow"><b>Why it matters</b><span>${f.why}</span></div><div class="frow"><b>Next</b><span>${nextHtml}</span></div></div>`;
+  const head=redact(headlineFor(p),spoiler);
   d.innerHTML=`<div class="avatar">${avatarHTML(p.author)}</div>
   <div class="tweet-body">
     <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span><span class="t">· ${p.timeLabel.toLowerCase()}${threadTag}</span>
     <button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button></div>
-    <div class="tweet-text">${txtHtml}</div>
-    ${frameHtml}
+    <div class="tweet-text">${head}</div>
+    <div class="quote" hidden>${full}</div>
     <div class="tweet-meta">${p.sourceTitle}</div>
     ${p.originalText?`<div class="orig"><b>Original (${p.originalLanguage}):</b> ${p.originalText}</div>`:''}
-    <div class="tweet-src">${p.location}${evs?' · '+evs:''}</div>
+    <div class="tweet-src">${p.location}${evs?' · '+evs:''}<span class="cap">caption · quoted words below</span></div>
     <div class="tweet-actions">
-      <button data-k="ctx" aria-expanded="false">Translator &amp; archive</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">French original</button>':''}<button data-k="share">Share</button>
+      <button data-k="quote" aria-expanded="false">Quoted words</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">French original</button>':''}<button data-k="share">Share</button>
     </div>
     <div class="ctx"><b>Source:</b> ${p.sourceTitle} (<a href="${p.sourceUrl}" target="_blank" rel="noopener">${p.archive}</a>)<br>${redact(p.context||'',spoiler)}${p.reactions?`<br><br>${Object.entries(p.reactions).map(([k,v])=>`— <i>${k}</i>: ${redact(v,spoiler)}`).join('<br>')}`:''}</div>
   </div>`;
   const ctx=d.querySelector('.ctx'),orig=d.querySelector('.orig'),more=d.querySelector('.more');
-  const jump=d.querySelector('.chain-next');
-  if(jump)jump.onclick=e=>{e.stopPropagation();goTo(parseIso(jump.dataset.jump));window.scrollTo(0,0)};
-  const show=(el,btn,on)=>{el.classList.toggle('show',on);if(btn)btn.setAttribute('aria-expanded',String(on))};
-  if(more)more.onclick=e=>{e.stopPropagation();const r=d.querySelector('.rest');const open=r.hidden;r.hidden=!open;more.textContent=open?'Show less':'Show more'};
+  const quote=d.querySelector('.quote');
+  const show=(el,btn,on)=>{el.classList.toggle('show',on);el.hidden=!on;if(btn)btn.setAttribute('aria-expanded',String(on))};
   d.querySelectorAll('.tweet-actions button').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.k;
     if(k==='orig'&&orig)show(orig,b,!orig.classList.contains('show'));
-    if(k==='ctx'||k==='react')show(ctx,b,!ctx.classList.contains('show'));
+    if(k==='quote'&&quote)show(quote,b,!quote.classList.contains('show'));
+    if(k==='react')show(ctx,b,!ctx.classList.contains('show'));
     if(k==='share'){const t=`"${p.displayText}" — ${p.author}, ${p.date} via Chronicle`;navigator.clipboard?.writeText(t);b.textContent='Copied ✓';setTimeout(()=>b.textContent='Share',1200)}});
   d.querySelector('.follow-btn').onclick=e=>{e.stopPropagation();followed.has(p.author)?followed.delete(p.author):followed.add(p.author);saveFollow();render()};
   d.querySelector('.author').onclick=e=>{e.stopPropagation();openProfile(p.author)};

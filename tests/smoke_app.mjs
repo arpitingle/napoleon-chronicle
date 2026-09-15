@@ -175,7 +175,10 @@ const fullShown = recs.filter(r => cards.some(c => c.innerHTML.includes(r.displa
 ok('every quote renders in full', fullShown === recs.length, fullShown + '/' + recs.length + ' in full');
 ok('no card asks you to expand a short quote', cards.every(c => !c.innerHTML.includes('Show more')));
 ok('source line shows without a click', cards.every(c => /tweet-meta/.test(c.innerHTML)));
-ok('why-it-matters frame renders on every card', cards.every(c => /class="frame"/.test(c.innerHTML) && /Situation/.test(c.innerHTML) && /Why it matters/.test(c.innerHTML) && /chain-next|chain-end/.test(c.innerHTML)));
+ok('every card opens on a caption, not the raw quote', cards.every(c => /class="tweet-text"/.test(c.innerHTML) && /caption · quoted words below/.test(c.innerHTML)));
+ok('verbatim quote is collapsed but present', cards.every(c => /class="quote" hidden/.test(c.innerHTML)));
+ok('quoted-words expander is wired', cards.every(c => /data-k="quote"/.test(c.innerHTML)));
+ok('no leftover frame chrome', cards.every(c => !/class="frame"|chain-next/.test(c.innerHTML)) && !fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8').includes('.frame{'));
 ok('longest excerpt is inside the clamp', Math.max(...recs.map(r => r.displayText.length)) <= 420,
    'max ' + Math.max(...recs.map(r => r.displayText.length)) + ' chars');
 

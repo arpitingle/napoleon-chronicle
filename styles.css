@@ -191,11 +191,10 @@ select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- why-it-matters frame (option 1) ---------- */
-.frame{margin-top:10px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm);background:var(--bg);padding:9px 12px;font-size:13px;line-height:1.5;color:var(--ink-soft)}
-.frow{display:flex;gap:8px;padding:2px 0}
-.frow b{flex:0 0 104px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:2px}
-.frow>span{flex:1;min-width:0}
-.chain-next{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);cursor:pointer}
-.chain-next:hover{text-decoration:underline}
-.chain-end{color:var(--muted)}
+/* ---------- caption + verbatim quote ---------- */
+.quote{display:none;margin-top:8px;padding:11px 13px;font-size:13.5px;line-height:1.55;
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-soft)}
+.quote.show{display:block}
+.quote b{color:var(--ink)}
+.cap{font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:100px;
+  padding:1px 8px;white-space:nowrap}
