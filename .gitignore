@@ -5,3 +5,9 @@ node_modules/
 .venv/
 venv/
 *.log
+# working files from the paraphrase batches; all merged into tweet_paraphrases.json
+sources/batch*
+sources/fix*_paraphrases.json
+sources/batch*fix*.json
+sources/batch*final.json
+sources/batch*short.json

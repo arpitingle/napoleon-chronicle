@@ -88,15 +88,15 @@ SEL = [
  ("b","1797-02-01","THE DIRECTORY",None,"Tolentino","To the Directory",None,"campo-1797","Tolentino: the Pope pays for peace.",None),
  ("b","1797-04-16","THE DIRECTORY",None,"Leoben","To the Directory",None,"campo-1797","Preliminaries signed: Austria will treat without England.",None),
  ("b","1797-05-14","THE DIRECTORY",None,"Montebello","To the Directory",None,"campo-1797","Venice judged: an armed republic that plotted with Naples and the Pope.",None),
- ("b","1797-07-14","THE ARMY",None,"Milan","To the Army",None,"campo-1797","14 July order of the day: the fallen as example.",None),
+ ("b","1797-07-14","THE ARMY",None,"Milan","To the Army",None,"campo-1797","Festival order of the day: the fallen as example.",None),
  ("b","1797-07-26","CONSERVATORY",None,"Milan","To the Conservatory inspectors",None,"campo-1797","The general with no soul for music writes to its inspectors.",None),
  ("b","1797-08-01","TUSCANY",None,"Milan","To the Grand Duke of Tuscany",None,"campo-1797","Tuscany settled from Milan.","TUSCANY"),
  ("b","1797-11-01","FOREIGN MINISTER",None,"Rastatt","To the Foreign Minister",None,"campo-1797","From Rastatt: peacemaking as power politics.",None),
  ("b","1798-06-01","MALTA",None,"Aboard L'Orient","To the Bishop of Malta",None,"egypt-1798","To Malta's bishop, days before the island falls.",None),
  ("b","1798-07-21","KLEBER",None,"Cairo","To General Kléber",None,"egypt-1798","Written the day of the Pyramids.",None),
  ("b","1798-09-01","THE DIRECTORY",None,"Cairo","To the Directory",None,"egypt-1798","Two months in: accounting to Paris.",None),
- ("b","1798-12-21","CAIRO",None,"Cairo","To the inhabitants of Cairo",None,"egypt-1798","Proclamation after the October revolt.",None),
- ("b","1798-12-02","BERTHIER",None,"Cairo","To General Berthier",None,"egypt-1798","December night orders: troopers at 2 a.m., Arabs at dawn.",None),
+ ("b","1798-12-21","CAIRO",None,"Cairo","To the inhabitants of Cairo",None,"egypt-1798","Proclamation after the Cairo revolt.",None),
+ ("b","1798-12-02","BERTHIER",None,"Cairo","To General Berthier",None,"egypt-1798","Night orders: troopers at 2 a.m., Arabs at dawn.",None),
  ("b","1799-01-02","TIPPOO",None,"Cairo","To Tippoo Sahib",None,"egypt-1798","To Mysore: the eastern alliance against England that never was.",None),
  ("b","1799-03-01","SIDNEY SMITH",None,"Acre","To Commodore Sidney Smith",None,"egypt-1798","Headquarters cartel letter to his Acre adversary.",None),
  ("b","1799-07-01","DIVAN",None,"Cairo","To the Divan of Cairo",None,"egypt-1798","Governing Egypt through its notables.",None),
@@ -105,7 +105,7 @@ SEL = [
  ("b","1799-10-10","THE DIRECTORY",None,"Aix","To the Directory",None,"brumaire-1799","Back in France, reporting to the Directory he will overthrow in weeks.",None),
  ("b","1800-05-01","CONSULS","Lausanne","Lausanne","To the Consuls",None,"marengo-1800","Second Italian campaign opens: First Consul writing to his colleagues.",None),
  ("b","1800-06-20","CARNOT",None,"Milan","To Citizen Carnot",None,"marengo-1800","After Marengo: Kléber, Egypt, and broken capitulations.",None),
- ("b","1800-06-21","BERTHIER",None,"Milan","To General Berthier",None,"marengo-1800","Virtuosos for the 14 July fête — war administration as usual.",None),
+ ("b","1800-06-21","BERTHIER",None,"Milan","To General Berthier",None,"marengo-1800","Virtuosos for the national fête — war administration as usual.",None),
  ("n","1794-05-20","MRS. NELSON",None,"Bastia","To Mrs. Nelson",None,"corsica-1793","OPPOSING VOICE: Nelson besieging Calvi — George III, King of Corsica.",None),
  ("n","1796-11-01","LOCKER",None,"At sea","To William Locker",None,"italy-1796","OPPOSING VOICE: Nelson quits Corsica — 'the first and the last of that kingdom.'",None),
 ]
@@ -169,10 +169,10 @@ def push(author_d, date, tlabel, loc, disp, src_title, archive, url, dtype, ctx,
 
 # explicit iso/cert fixes: (sel-iso, addrkey) -> (true iso, cert, note)
 FIX = {
- ("1796-04-01", "CARNOT"): ("1796-04-14", "approximate", "Dateline partly illegible in scan; placed by content after Montenotte–Millesimo (12–14 Apr). "),
- ("1796-04-01", "MONDOVI"): ("1796-04-23", "approximate", "Dateline partly illegible in scan; placed by content after Mondovi (21–22 Apr). "),
- ("1796-05-01", "PLACENTIA"): ("1796-05-07", "approximate", "Dateline partly illegible in scan; placed by content at the Po crossing (7 May). "),
- ("1796-05-01", "MILANAIS"): ("1796-05-19", "approximate", "Dateline partly illegible in scan; placed by content amid the Milan proclamations (mid-May). "),
+ ("1796-04-01", "CARNOT"): ("1796-04-14", "approximate", "Dateline partly illegible in scan; placed by content after Montenotte–Millesimo. "),
+ ("1796-04-01", "MONDOVI"): ("1796-04-23", "approximate", "Dateline partly illegible in scan; placed by content after Mondovi. "),
+ ("1796-05-01", "PLACENTIA"): ("1796-05-07", "approximate", "Dateline partly illegible in scan; placed by content at the Po crossing. "),
+ ("1796-05-01", "MILANAIS"): ("1796-05-19", "approximate", "Dateline partly illegible in scan; placed by content amid the Milan proclamations. "),
 }
 
 for src, iso, key, placekey, loc, toline, tlab, eid, ctx, ovkey in SEL:

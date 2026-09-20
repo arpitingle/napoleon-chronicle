@@ -130,8 +130,8 @@ deterministic — rebuild and the `sha256` values are unchanged).
 
 ## Keyboard
 
-With the timeline open: `←`/`→` move a day, `r` toggles Replay day, `s` toggles
-Spoiler-free, `Esc` closes the profile modal.
+With the timeline open: `←`/`→` move a day, `r` toggles Replay day,
+`Esc` closes the profile modal.
 
 ## Known gaps
 
@@ -144,5 +144,8 @@ editor — see EDITORIAL.md.
 * `corr_vol{09,10,11,20,26}.txt` are Internet Archive HTML pages, not OCR text,
 and `corr_vol13.txt` is an "item not available" page — ~700 KB of dead corpus
 that overlaps the thinnest years.
-* Only 5 accounts exist (Napoleon 1,330; Wellington 18; the Directory 4;
-Warden 3; Nelson 2); `reactions` is unused, so that affordance no longer renders.
+ * One voice: every published record is a letter, order, proclamation or
+ dispatch by Napoleon himself (1,538) — Wellington despatches, Directory
+ orders and St Helena eyewitness accounts stay in the slices as raw
+ material, never in the feed; `reactions` is unused, so that affordance
+ no longer renders.

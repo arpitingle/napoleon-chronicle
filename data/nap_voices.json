@@ -106,7 +106,7 @@
   "timePrecision": "day",
   "location": "Lesaca",
   "originalLanguage": "English",
-  "displayText": "“s than OFFICERS. 73 to the instruction we have given them. In the end of last campaign, they behaved, in many instances, exceedingly ill, because they were in extreme misery, the Portuguese government having neglected to pay them. […]”",
+  "displayText": "“s than to the instruction we have given them. In the end of last campaign, they behaved, in many instances, exceedingly ill, because they were in extreme misery, the Portuguese government having neglected to pay them. […]”",
   "sourceTitle": "To To the Earl of Liverpool, Lesaca, 1813-07-25",
   "archive": "Wellington, Despatches 1799–1815 (1902 selection) — public domain",
   "sourceUrl": "https://archive.org/details/india.history.resource.111797",
@@ -165,7 +165,7 @@
    "waterloo-1815"
   ],
   "editorialStatus": "verified",
-  "context": "Intelligence charlatans, Brussels, May 1815."
+  "context": "Intelligence charlatans in Brussels."
  },
  {
   "id": "nap-18150622-08",
@@ -237,7 +237,7 @@
    "sthelena-1815"
   ],
   "editorialStatus": "verified",
-  "context": "July 10, 1816, dated in print: walk, calash, Beaumarchais read. Reported speech via Las Cases' journal; undated in print except where stated."
+  "context": "Walk, calash, Beaumarchais read. Reported speech via Las Cases' journal; undated in print except where stated."
  },
  {
   "id": "nap-18160101-11",
@@ -261,7 +261,7 @@
    "sthelena-1815"
   ],
   "editorialStatus": "verified",
-  "context": "On Moscow's burning and Rostopchin; undated conversation, 1816. Reported speech via Las Cases' journal; undated in print except where stated."
+  "context": "On Moscow's burning and Rostopchin; undated conversation. Reported speech via Las Cases' journal; undated in print except where stated."
  },
  {
   "id": "nap-18160101-12",
@@ -597,7 +597,7 @@
    "consulate-1802"
   ],
   "editorialStatus": "verified",
-  "context": "29 June letter answered; health unwritten."
+  "context": "Her letter answered; health unwritten."
  },
  {
   "id": "nap-18070718-26",
@@ -621,6 +621,6 @@
    "tilsit-1807"
   ],
   "editorialStatus": "verified",
-  "context": "Printed 1801 in error; Dresden stay was July 1807 on the Tilsit return."
+  "context": "Misprinted year; Dresden stay on the Tilsit return."
  }
 ]

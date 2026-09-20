@@ -16,6 +16,8 @@ function iso(o){return `${o.y}-${String(o.m).padStart(2,'0')}-${String(o.d).padS
 function parseIso(s){const[a,b,c]=s.split('-').map(Number);return{y:a,m:b,d:c}}
 function saveFollow(){localStorage.setItem('nap_follow',JSON.stringify([...followed]))}
 const EV_SHORT={'ORIGINAL MANUSCRIPT':'📜 manuscript','CONTEMPORARY NEWSPAPER':'📰 newspaper','OFFICIAL RECORD':'🏛 official','CONTEMPORARY TRANSCRIPT':'🗣 transcript','EYEWITNESS ACCOUNT':'👁 eyewitness','LATER MEMOIR':'💭 memoir','TRANSLATION':'🌐 translation','DATE APPROXIMATE':'~ approx date'};
+/* EV_SHORT no longer renders (badges removed) but stays as the display
+   contract verify.py checks evidenceType values against. */
 function avatarHTML(a){const u=AVATAR[a];return u?`<img class="ava" src="${u}" alt="${a}">`:`${a.trim()[0]}`}
 function shortHTML(t){
   /* the archive caps excerpts at ~300 chars (a handful reach ~400), so almost
@@ -170,11 +172,10 @@ function nearestDate(target){
   return {date:best,days:bd};
 }
 function visiblePosts(){
-  const target=iso(cur),mode=$('#followFilter').value,spoiler=$('#spoilerToggle').checked;
+  const target=iso(cur);
   let list=POSTS.filter(p=>p.date===target);
   list.sort((a,b)=>(ORDER[a.timeLabel]??3)-(ORDER[b.timeLabel]??3)||(a.id<b.id?-1:1));
-  if(mode==='following')list=list.filter(p=>followed.has(p.author));
-  return {list,target,spoiler};
+  return {list,target,spoiler:false};
 }
 function redact(t,on){if(!on)return t;return t.replace(/guillotin\w*|execut\w*|behead\w*|massacr\w*/gi,'████')}
 function render(){
@@ -208,86 +209,157 @@ function render(){
     if(l&&l.author===p.author&&l.date===p.date)run.push(p);else{flush();run=[p]}});
   flush();
 }
-/* ---- coherent headline (display) vs verbatim quote (one tap down) ----
-   The top line of a card is a CAPTION: either the editor's own context prose,
-   or a line composed from verified fields (addressee / place / date). It is
-   never a rewording of the letter. The exact historical text stays one tap
-   away, unaltered, so nothing is misrepresented. */
+/* ---- context is the tweet; verbatim is one tap down ----
+   The visible line is editorial context (captionFor) or, where the context
+   is pure boilerplate, a line composed from verified fields (addressee /
+   place / date). It never rewords the letter. The exact historical text
+   lives behind the Verbatim button, unaltered. */
 const PROV=/translated for chronicle|english from the|french in the|full text in the|public domain|public-domain/i;
 /* the auto-generated "Letter to X from Y, date." line — reworded, not quoted */
-const LETTERBOILER=/^letter to .+ from .+\d{4}/i;
+/* ---- caption: only when the context says something the quote doesn't ----
+   Provenance boilerplate and lines that merely restate the source title
+   never become visible text. Short hand-written summaries ("Ultimatum
+   season.") do: the 12-char floor keeps one-line telegrams, not fragments. */
+const NOTEISH=/trivial ocr|ocr repairs|single characters|running head/i;
 function sentencesOf(t){return (t||'').match(/[^.!?]+[.!?]+["\u201d']?|\S[^.!?]*$/g)||[]}
-function addrOf(p){
-  return (p.sourceTitle||'')
-    .replace(/^[\u201c"'\s]+/,'')
-    .replace(/,?\s*\d{4}-\d{2}-\d{2}.*$/,'')
-    .replace(/\b\d{1,2}[A-Za-z]{1,3}\b(?=[,\s]|$)/g,'')
-    .replace(/[*^'"]+/g,'')
-    .replace(/\s{2,}/g,' ')
-    .replace(/\s*,\s*$/,'')
-    .trim();
-}
-const capName=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
-function headlineFor(p){
+function captionFor(p){
   const raw=(p.context||'').trim();
   const sents=sentencesOf(raw).map(s=>s.trim());
-  /* the auto-generated "Letter to X from Y, date." opener — reworded, not quoted */
   const auto=/^letter to .+ from .+\d{4}/i.test(raw);
-  let prose;
+  let cand;
   if(auto){
-    const start=sents.findIndex(s=>PROV.test(s));
-    prose=start>-1?sents.slice(start+1).filter(s=>!PROV.test(s)):[];
+    const i=sents.findIndex(s=>PROV.test(s));
+    cand=i>-1?sents.slice(i+1).filter(s=>!PROV.test(s)).join(' '):'';
   }else{
-    prose=sents.filter(s=>s&&!PROV.test(s));
+    cand=sents.filter(s=>!PROV.test(s)).join(' ');
   }
-  const when=fmt(+p.date.slice(8),+p.date.slice(5,7),+p.date.slice(0,4));
-  if(prose.length){
-    let h=prose.join(' ').trim();
-    h=h.charAt(0).toUpperCase()+h.slice(1);
-    if(!/[.!?]$/.test(h))h+='.';
-    return h;
+  cand=(cand||'').trim();
+  if(cand.length<12||!/[a-z]/i.test(cand)||NOTEISH.test(cand))return '';
+  const norm=s=>(s||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(norm(cand).replace(/\d/g,'') && norm(p.sourceTitle).indexOf(norm(cand).replace(/\d/g,'').slice(0,30))>-1)return '';
+  if(!/[.!?]$/.test(cand))cand+='.';
+  return cand.charAt(0).toUpperCase()+cand.slice(1);
+}
+function fmtDate(isoStr){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(isoStr||'');
+  if(!m)return isoStr||'';
+  return fmt(+m[3],+m[2],+m[1]);
+}
+function headlineFor(p){
+  const cap=captionFor(p);
+  if(cap)return cap;
+  /* fallback: the source title minus any trailing date — the UI shows
+     the date on every card, so the tweet never repeats it */
+  const base=(p.sourceTitle||'A document')
+    .replace(/,\s*\d{4}-\d{2}-\d{2}\s*$/,'')
+    .replace(/,\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s*$/,'')
+    .trim();
+  const rawLoc=p.location||'';
+  const loc=(/\d|\^|\*|•/.test(rawLoc)||/^[^A-Za-zÀ-Þ]/.test(rawLoc))?'':rawLoc;
+  if(loc&&base.toLowerCase().endsWith(loc.toLowerCase()))return `${base}.`;
+  if(loc)return `${base} — ${loc}.`;
+  return `${base}.`;
+}
+function hasCaption(p){return captionFor(p)!==''}
+/* ---- the tweet is Napoleon's voice: a first-person clause from the letter.
+   Bulk records carry a pipeline-picked voice line (record.voice); the rest
+   fall back to picking one from the excerpt here, else the narrative. */
+const VOICE_CRUST=[/^[“"'\s*<>.,;:\-—–]+/,/^(To\s+[A-Z][^.!?]{5,80}?\.\s*)/,
+  /^("[A-Z][A-Za-z \-']{3,40}?,\s*)/,/^([A-Z][a-z]+\s*,?\s*(th|st|nd|rd)?\s*[A-Za-z]*\s*1[78]\d\d\.?\s*\*?\s*)/,
+  /^((O|«)\s*)?CHAPTER[^.!?]*[.!?]\s*/i,/^((O|«)\s*)?THE YEAR 1[78]\d\d[^.!?]*[.!?]\s*/i,
+  /^\([^)]*omitted\)\.?\s*/i,/^(My\s+)?(Sir|Madame|Monsieur|Lord|Cousin|Son|Daughter|Sister|Brother)[^:—–-]*[:—–-]\s*/,
+  /^u\s+BONAPARTE\.?\s*/i,/^"?\s*Napoleon\.?"?\s*/,/^BONAPARTE\.?\s*/,
+  /^[A-Z][A-Z \-/']{4,40}?\.\s*/,/^\d{1,3}\s+(?!(?:men|francs|guns|ships|soldiers|crowns|troops|artillery|cavalry|horses|waggons|miles|leagues|days|months|years|prisoners|o'clock)\b)/i];
+const VOICE_JUNK=[/\b[A-Z]{9,}\b/,/[A-Za-z]+\d+[A-Za-z]+/,/\b1[78]\s\d\d\b/,/\S  \S/,/[a-z][A-Z][a-z]/,
+  /\b[A-Z]{3,}\b.*\b[A-Z]{3,}\b.*\b[A-Z]{3,}\b/,/(?<![\d,])\b\d{1,3}\s+[a-zà-þ]/,
+  /(?<=[A-Za-z]{4})\. +(?=[A-Z][a-z])/];
+function cleanVoice(t){
+  t=(t||'').replace(/[“”]/g,'"').replace(' […]',' ').replace('[…]',' ');
+  t=t.replace(/\s+/g,' ').trim();
+  for(let i=0;i<6;i++)for(const rx of VOICE_CRUST)t=t.replace(rx,'').trim();
+  return t;
+}
+function handleOf(p){
+  const m=/^To\s+(.+?)(?:,|$)/i.exec(p.sourceTitle||'');
+  if(!m)return null;
+  const fold=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const key=fold(m[1].trim().replace(/\.$/,'')).replace(/[^a-z]/g,'');
+  const special={pope:'pope',holyfather:'pope',hhthepope:'pope',directory:'directory',senate:'senate',
+    russia:'alexander',emperorofrussia:'alexander',peace:'godoy',princeofthepeace:'godoy'};
+  if(special[key])return special[key];
+  const titles=new Set(['general','marshal','admiral','cardinal','prince','princess','count','comte','duke','king','queen','emperor','minister','secretary','chief','staff','grand','judge','arch','chancellor','foreign','war','interior','police','navy','the','of','de','m']);
+  const words=fold(m[1]).match(/[a-z]+/g)||[];
+  const names=words.filter(w=>!titles.has(w)&&w.length>2);
+  if(!names.length||/\d/.test(m[1])||/[A-Z]{5,}/.test(m[1]))return null;
+  return names[names.length-1];
+}
+function voiceFor(p){
+  /* records without a pipeline voice: pick a first-person clause live.
+     Never a date (the UI shows it), never junk. */
+  const NODATE=/\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b|\b1[789]\d\d\b|\b1[78]\s\d\d\b|\b\d{1,2}(st|nd|rd|th)\b/i;
+  const sents=sentencesOf(cleanVoice(p.displayText)).map(s=>s.trim()).filter(s=>s.length>=35&&s.length<=220);
+  const first=/\b(I|We|My|Our|Me|we|my|our|me|myself|ourselves|You|you|Your|your|Yours|yours|moi|je|nous|mon|ma|mes|notre|nos)\b/;
+  const dang=/^(He|She|It|They|This|That|These|Those|There|Then|Thus|Such|Which|Who|What|Where|When|While|Without|With|For|From|On|At|As|By|If|Though|Although|However|Meanwhile|Instead|Besides|Yet|Second|Third|Art|Your\s+(Majesty|Lordship|Highness|Excellency))\b/i;
+  const verb=/\b(order(?:s|ed|ing)?|sen[dt]|despatch|dispatch|report|inform|apprise|demand|insist|refus|declin|deny|pay|paid|fund|march|warn|caution|request|beg|pray|announce|proclaim|declare|instruct|direct|forward|transmit|enclos|approv|sanction|propos|suggest|appoint|nominat|attack|assault|storm|defeat|beat|rout|retreat|withdraw|surrender|capitulat|complain|congratulate|arrest|assur|promis|authoris|forbid|forbade|forbidden|grant|resolv|learn|hear|receiv|arriv|seiz|occup|cross|enter|recall|dismiss|expect|hope|wish|fear|need|wrote|written|examin|pronounc|repli|answer|speak|talk|mention|continu|remain|long|urg|recommend|threaten|punish|reward|promot|transfer|detach|embark|sail|land|besieg|invest|blockad|burn|destroy|ruin|abdicat|resign|marry|marriage|divorce|crown|am|is|are|was|were|have|has|had|will|shall|must|do|does|did|let|take|took|taken|make|made|give|gave|given|send|sent|come|came|go|went|see|saw|know|knew|think|thought|find|found|leave|left|hold|held|keep|kept|put|set|seem|become|became|grow|grew|live|fall|fell|rise|fight|fought|win|won|lose|lost|owe|want|believe|desire|seek|gain|save|spare|join|quit|stay|serve|deserve|contain|explain|state|observe|remark|require|suppos|imagine)\b/i;
+  let best=null,bs=-1;
+  for(const s of sents){
+    if(dang.test(s)||!first.test(s)||!verb.test(s.slice(0,140)))continue;
+    if(NODATE.test(s))continue;
+    if(VOICE_JUNK.some(rx=>rx.test(s)))continue;
+    let sc=0;
+    if(/^(I|We|My|Our|You|Your|Let|Soldiers|Citizens)\b/.test(s))sc+=3;
+    sc+=2;
+    if(/\b(her|him|them)\b/i.test(s)&&!/([A-ZÀ-Þ][a-zà-þ]+(\s+[A-ZÀ-Þ][a-zà-þ]+){0,2})/.test(s))sc-=4;
+    if(sc>bs){bs=sc;best=s}
   }
-  const loc=p.location||'place unknown';
-  const lm=raw.match(/^Letter to (.+?) from (.+?), ?\d{4}/i);
-  if(lm)return `To ${lm[1].trim()}, written from ${lm[2].trim()} on ${when}.`;
-  let head=addrOf(p)||capName((p.documentType||'letter').replace(/\s*\(.*\)/,''));
-  head=head.replace(new RegExp('[ ,;:]*'+loc.replace(/[^A-Za-z .'-]/g,'')+'[ ,;:]*$',''),'').replace(/[\s,;:]+$/,'');
-  return `${head} \u00b7 ${loc} \u00b7 ${when}.`;
+  if(!best||bs<4)return null;
+  let h=handleOf(p);
+  if(h&&/\byou\b|\byour\b/i.test(best))best='@'+h+' '+best;
+  best=best.replace(/["'\s]+$/,'');
+  if(!/[.!?…]$/.test(best))best+='.';
+  if(best.length>200){const cut=best.slice(0,200);const k=cut.lastIndexOf(' ');best=(k>120?cut.slice(0,k):cut).trimEnd()+'…'}
+  return best;
 }
 function card(p,spoiler,nth,ofN){
   const d=document.createElement('article');d.className='post'+(ofN>1?' in-thread':'');
   const v=p.accountType==='person'?'<span class="verified">✔</span>':'';
   const threadTag=ofN>1?`<span class="tag"> · 🧵 ${nth}/${ofN}</span>`:'';
-  const evs=[p.evidenceType,p.dateCertainty==='approximate'?'DATE APPROXIMATE':'',(p.originalLanguage!=='English'&&p.evidenceType!=='TRANSLATION')?'TRANSLATION':''].filter(Boolean).map(e=>`<span class="ev">${EV_SHORT[e]||e.toLowerCase()}</span>`).join('');
-  const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
-  const txtHtml=sh?`“${redact(sh.cut,spoiler)}… <a href="#" class="more">Show more</a><span class="rest" hidden> ${redact(sh.rest,spoiler)}</span>”`:full;
-  const rc=p.reactions?Object.keys(p.reactions).length:0;
+  const voice=p.voice||voiceFor(p);
   const head=redact(headlineFor(p),spoiler);
+  const tweet=p.tweet?redact(p.tweet,spoiler):(voice?redact(voice,spoiler):head);
+  const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
+  const quoteHtml=sh?`“${redact(sh.cut,spoiler)}… <a href="#" class="more">Show more</a><span class="rest" hidden> ${redact(sh.rest,spoiler)}</span>”`:full;
+  /* the tweet already is the whole quote: no verbatim block to reveal */
+  const norm=s=>(s||'').toLowerCase().replace(/[^a-z]/g,'');
+  const dupQuote=!sh&&norm(tweet)===norm(full);
+  const rc=p.reactions?Object.keys(p.reactions).length:0;
+  const showFollow=!ofN||ofN===1||nth===1;   /* one Follow per thread, not eight */
   d.innerHTML=`<div class="avatar">${avatarHTML(p.author)}</div>
   <div class="tweet-body">
-    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span><span class="t">· ${p.timeLabel.toLowerCase()}${threadTag}</span>
-    <button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button></div>
-    <div class="tweet-text">${head}</div>
-    <div class="quote" hidden>${full}</div>
-    <div class="tweet-meta">${p.sourceTitle}</div>
+    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span><span class="t">${threadTag}</span>
+    ${showFollow?`<button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button>`:''}</div>
+    <div class="tweet-text">${tweet}</div>
+    ${dupQuote?'':`<div class="verbatim" hidden>${quoteHtml}</div>`}
     ${p.originalText?`<div class="orig"><b>Original (${p.originalLanguage}):</b> ${p.originalText}</div>`:''}
-    <div class="tweet-src">${p.location}${evs?' · '+evs:''}<span class="cap">caption · quoted words below</span></div>
+    ${p.location&&!/^[^A-Za-zÀ-Þ]/.test(p.location||'')&&!/[\d^*•]/.test(p.location||'')?`<div class="tweet-src">${p.location}</div>`:''}
     <div class="tweet-actions">
-      <button data-k="quote" aria-expanded="false">Quoted words</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">French original</button>':''}<button data-k="share">Share</button>
+      ${dupQuote?'':'<button data-k="quote" aria-expanded="false">Verbatim</button>'}<button data-k="ctx" aria-expanded="false">Source &amp; context</button>${rc?`<button data-k="react" aria-expanded="false">Reactions (${rc})</button>`:''}${p.originalText?'<button data-k="orig" aria-expanded="false">French original</button>':''}<button data-k="share">Share</button>
     </div>
-    <div class="ctx"><b>Source:</b> ${p.sourceTitle} (<a href="${p.sourceUrl}" target="_blank" rel="noopener">${p.archive}</a>)<br>${redact(p.context||'',spoiler)}${p.reactions?`<br><br>${Object.entries(p.reactions).map(([k,v])=>`— <i>${k}</i>: ${redact(v,spoiler)}`).join('<br>')}`:''}</div>
+    <div class="ctx">${p.tweet?`<i>The tweet above is a modern paraphrase in his voice — the verbatim quote is under Verbatim.</i><br>`:''}<b>Source:</b> ${p.sourceTitle} (<a href="${p.sourceUrl}" target="_blank" rel="noopener">${p.archive}</a>)<br>${redact(sentencesOf(p.context||'').filter(s=>!NOTEISH.test(s)).join(' ')||'',spoiler)}${p.reactions?`<br><br>${Object.entries(p.reactions).map(([k,v])=>`— <i>${k}</i>: ${redact(v,spoiler)}`).join('<br>')}`:''}</div>
   </div>`;
-  const ctx=d.querySelector('.ctx'),orig=d.querySelector('.orig'),more=d.querySelector('.more');
-  const quote=d.querySelector('.quote');
-  const show=(el,btn,on)=>{el.classList.toggle('show',on);el.hidden=!on;if(btn)btn.setAttribute('aria-expanded',String(on))};
+  const ctx=d.querySelector('.ctx'),orig=d.querySelector('.orig'),verb=d.querySelector('.verbatim');
+  const show=(el,btn,on)=>{if(!el)return;el.classList.toggle('show',on);el.hidden=!on;if(btn)btn.setAttribute('aria-expanded',String(on))};
   d.querySelectorAll('.tweet-actions button').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.k;
+    if(k==='quote')show(verb,b,!(verb.classList.contains('show')));
     if(k==='orig'&&orig)show(orig,b,!orig.classList.contains('show'));
-    if(k==='quote'&&quote)show(quote,b,!quote.classList.contains('show'));
-    if(k==='react')show(ctx,b,!ctx.classList.contains('show'));
-    if(k==='share'){const t=`"${p.displayText}" — ${p.author}, ${p.date} via Chronicle`;navigator.clipboard?.writeText(t);b.textContent='Copied ✓';setTimeout(()=>b.textContent='Share',1200)}});
-  d.querySelector('.follow-btn').onclick=e=>{e.stopPropagation();followed.has(p.author)?followed.delete(p.author):followed.add(p.author);saveFollow();render()};
+    if(k==='ctx')show(ctx,b,!ctx.classList.contains('show'));
+    if(k==='share'){const t=`${p.tweet||p.voice||voiceFor(p)||headlineFor(p)} — ${p.author}, ${p.date} via Chronicle`;navigator.clipboard?.writeText(t);b.textContent='Copied ✓';setTimeout(()=>b.textContent='Share',1200)}});
+  const more=d.querySelector('.more');
+  if(more)more.onclick=e=>{e.stopPropagation();e.preventDefault();show(verb,d.querySelector('[data-k="quote"]'),true);const r=d.querySelector('.rest');if(r)r.hidden=false;more.hidden=true};
+  const fb=d.querySelector('.follow-btn');
+  if(fb)fb.onclick=e=>{e.stopPropagation();followed.has(p.author)?followed.delete(p.author):followed.add(p.author);saveFollow();render()};
   d.querySelector('.author').onclick=e=>{e.stopPropagation();openProfile(p.author)};
-  d.onclick=()=>show(ctx,null,!ctx.classList.contains('show'));
+  d.onclick=()=>show(verb,d.querySelector('[data-k="quote"]'),!(verb.classList.contains('show')));
   return d;
 }
 async function openProfile(a){
@@ -316,7 +388,6 @@ function shiftDay(n){
 $('#prevDay').onclick=()=>shiftDay(-1);
 $('#nextDay').onclick=()=>shiftDay(1);
 $('#backBtn').onclick=()=>{$('#app').hidden=true;$('#landing').style.display='flex'};
-$('#spoilerToggle').onchange=render;$('#followFilter').onchange=render;
 $('#replayBtn').onclick=()=>{replayOn=!replayOn;$('#replayBtn').textContent=replayOn?'Stop replay':'Replay day';render()};
 $('#jumpBtn').onclick=()=>{const v=$('#jumpDate').value;if(v)goTo(parseIso(v))};
 $('#jumpDate').onchange=()=>{$('#jumpDate').value&&goTo(parseIso($('#jumpDate').value))};
@@ -329,6 +400,5 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowRight'){shiftDay(1)}
   else if(e.key==='Escape'){$('#profileModal').hidden=true}
   else if(e.key==='r'){$('#replayBtn').click()}
-  else if(e.key==='s'){$('#spoilerToggle').checked=!$('#spoilerToggle').checked;render()}
 });
 load();

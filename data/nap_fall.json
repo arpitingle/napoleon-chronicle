@@ -1365,7 +1365,7 @@
    "france-1814"
   ],
   "editorialStatus": "verified",
-  "context": "Armaments for 1814."
+  "context": "Bayonne frontier open; goods landed."
  },
  {
   "id": "nap-18131110-58",
@@ -1989,7 +1989,7 @@
    "waterloo-1815"
   ],
   "editorialStatus": "verified",
-  "context": "Guard soon marching; Paris quarters by June 1."
+  "context": "Guard soon marching; Paris quarters must be ready."
  },
  {
   "id": "nap-18150601-84",
@@ -2013,7 +2013,7 @@
    "waterloo-1815"
   ],
   "editorialStatus": "verified",
-  "context": "Grouchy gets the cavalry; Suchet takes Montmélian on the 14th."
+  "context": "Grouchy gets the cavalry; Suchet takes Montmélian."
  },
  {
   "id": "nap-18150606-85",
@@ -2133,7 +2133,7 @@
    "waterloo-1815"
   ],
   "editorialStatus": "verified",
-  "context": "Beaumont headquarters; Charleroi tomorrow. Dateline OCR reads June 18; content ('to-morrow the 15th') fixes to June 14."
+  "context": "Beaumont headquarters; Charleroi tomorrow. Dateline corrected from content."
  },
  {
   "id": "nap-18140405-90",
@@ -2157,7 +2157,7 @@
    "fontainebleau-1814"
   ],
   "editorialStatus": "verified",
-  "context": "Bingham prints the Fontainebleau army farewell under a confused June 1815 date; text belongs to April 1814."
+  "context": "Bingham misfiles the Fontainebleau farewell."
  },
  {
   "id": "nap-18120907-91",
@@ -2229,7 +2229,7 @@
    "leipzig-1813"
   ],
   "editorialStatus": "verified",
-  "context": "1813 opening discourse."
+  "context": "Opening discourse to the legislators."
  },
  {
   "id": "nap-18131201-94",
@@ -2242,7 +2242,7 @@
   "timePrecision": "day",
   "location": "Paris",
   "originalLanguage": "French",
-  "displayText": "“Legislative Body, December, 1813. Address to the Guard, April 2, 18 14. Speech of Abdication, April 2, 1814. Farewell to the Old Guard, April 20, 1814. Proclamation to the French People on His Return from Elba, March 5, 18 15. XXU CONTENTS. Napoleon's Proclamation to the Army on His Return from Elba, March 5, 18 15. […]”",
+  "displayText": "“Address to the Guard, April 2, 18 14. Speech of Abdication, April 2, 1814. Farewell to the Old Guard, April 20, 1814. Proclamation to the French People on His Return from Elba, March 5, 18 15. XXU CONTENTS. Napoleon's Proclamation to the Army on His Return from Elba, March 5, 18 15. […]”",
   "sourceTitle": "Address to the Legislative Body, 1813-12-01",
   "archive": "Tarbell, Napoleon's Addresses (1897) — public domain translations",
   "sourceUrl": "https://archive.org/details/napoleonsaddress00napo",
@@ -2253,7 +2253,7 @@
    "leipzig-1813"
   ],
   "editorialStatus": "verified",
-  "context": "December 1813 address."
+  "context": "Winter address to the legislators."
  },
  {
   "id": "nap-18140404-95",
@@ -2277,7 +2277,7 @@
    "fontainebleau-1814"
   ],
   "editorialStatus": "verified",
-  "context": "The 4 April declaration; Tarbell misdates April 2."
+  "context": "Abdication declared; edition misdates it."
  },
  {
   "id": "nap-18140420-96",

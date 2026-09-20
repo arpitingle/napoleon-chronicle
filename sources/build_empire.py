@@ -223,7 +223,7 @@ for iso, key, placekey, loc, toline, fac, eid, ctx in SEL:
     if "FIX3DEC" in ctx:
         ctx = ctx.replace(" FIX3DEC", "")
         iso, cert = "1805-12-03", "certain"
-        ctx = "Dateline OCR reads Dec 1; content ('decisive battle yesterday' = 2 Dec) fixes to 3 Dec. " + ctx
+        ctx = "Dateline corrected from content; the decisive battle was yesterday. " + ctx
     arch, url = (BARCH1, BURL1) if iso < "1803" else (BARCH, BURL2 if iso < "1810" else BURL3)
     push(out, NAP, fac, iso, None, loc if loc != "Headquarters" or r["place"] else (r["place"] or "Headquarters"),
          "“" + clean(r["body"]) + "”",

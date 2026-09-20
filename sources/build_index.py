@@ -13,9 +13,13 @@ builder's output needs no front-end edit: any data/nap_*.json is picked up.
 
 Run from anywhere:  python3 sources/build_index.py
 """
-import glob, hashlib, json, os, re
+import glob, hashlib, json, os, re, sys
 from collections import Counter, defaultdict
 from datetime import date, timedelta
+
+sys.path.insert(0, os.path.join(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))), "sources"))
+from common import DROP_IDS, clean_place
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -64,10 +68,41 @@ def avatar_for(author):
     return None
 
 
+def polish(t):
+    """Repair the visible edges of an excerpt without touching its words:
+    stray punctuation after the opening quote, leaked datelines, doubled
+    spaces, and a lowercase first letter. Everything else stays verbatim."""
+    t = (t or "").strip()
+    open_q = t[:1] in ("\u201c", '"')
+    if open_q:
+        t = t[1:].lstrip()
+    t = re.sub(r'^[\u201d"\'*\u2014\u00ab\u2022<.]+\s*', '', t)
+    t = re.sub(r'^(January|February|March|April|May|June|July|August|September|'
+               r'October|November|December),?\s+1[78]\d\d\.?\s*', '', t)
+    t = re.sub(r'\s{2,}', ' ', t).strip(' .')
+    if t and t[0].islower():
+        t = t[0].upper() + t[1:]
+    return ('\u201c' + t) if open_q else t
+
+
 def load_verified():
-    """Every slice, deduped by id, in deterministic order."""
+    """Every slice, deduped by id, in deterministic order.
+
+    Applies sources/context_overrides.json (reviewed editorial summaries for
+    the bulk boilerplate) so a slice rebuild cannot restore them. Publishes
+    Napoleon's letters only: Wellington despatches, Directory orders and
+    St Helena eyewitnesses stay in the slices as raw material, never in
+    the feed."""
+
     files = [os.path.join(DATA, "napoleon_seed.json")]
     files += sorted(glob.glob(os.path.join(DATA, "nap_*.json")))
+    ov_path = os.path.join(ROOT, "sources", "context_overrides.json")
+    overrides, voices, tweets = {}, {}, {}
+    if os.path.exists(ov_path):
+        ov = json.load(open(ov_path, encoding="utf-8"))
+        overrides = ov.get("contexts", {})
+        voices = ov.get("voices", {})
+        tweets = ov.get("tweets", {})
     posts, seen, per_file = [], {}, {}
     for f in files:
         if not os.path.exists(f):
@@ -85,16 +120,31 @@ def load_verified():
             if rid in seen:
                 raise SystemExit("duplicate id %s in %s (already in %s)"
                                  % (rid, os.path.basename(f), seen[rid]))
+            if rid in DROP_IDS:
+                print("drop (not publishable): %s in %s"
+                      % (rid, os.path.basename(f)))
+                continue
+            if r.get("author") != "Napoleon Bonaparte":
+                print("skip (not his letter): %s by %s in %s"
+                      % (rid, r.get("author"), os.path.basename(f)))
+                continue
             missing = [k for k in REQUIRED if k not in r]
             if missing:
                 raise SystemExit("%s: %s missing %s"
                                  % (os.path.basename(f), rid, missing))
             seen[rid] = os.path.basename(f)
+            if rid in overrides:
+                r = dict(r, context=overrides[rid])
+            if rid in voices:
+                r = dict(r, voice=voices[rid])
+            if rid in tweets:
+                r = dict(r, tweet=tweets[rid])
+            r = dict(r, location=clean_place(r.get("location")))
             posts.append(r)
             kept += 1
         per_file[os.path.basename(f)] = kept
     posts.sort(key=lambda r: (r["date"], r["id"]))
-    return posts, per_file
+    return posts, per_file, len(overrides)
 
 
 def era_of(year):
@@ -105,7 +155,7 @@ def era_of(year):
 
 
 def main():
-    posts, per_file = load_verified()
+    posts, per_file, n_overrides = load_verified()
 
     buckets = defaultdict(list)
     unmapped = Counter()
@@ -114,7 +164,7 @@ def main():
         if eid is None:
             unmapped[r["date"][:4]] += 1
         else:
-            buckets[eid].append(r)
+            buckets[eid].append(dict(r, displayText=polish(r.get("displayText") or "")))
     if unmapped:
         raise SystemExit("years outside every era: %s — extend ERAS" % dict(unmapped))
 
@@ -176,6 +226,7 @@ def main():
                             % (len(posts), posts[0]["date"], posts[-1]["date"],
                                len(date_count), gap, span, start, end),
             "builtFrom": per_file,
+            "contextOverrides": n_overrides,
         },
         "counts": {"posts": len(posts), "dates": len(date_count),
                    "authors": len(authors), "events": len(ev["events"]),

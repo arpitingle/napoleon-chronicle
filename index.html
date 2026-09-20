@@ -6,7 +6,7 @@
 <meta name="description" content="Napoleon's real letters, orders and proclamations, 1789-1821, as a timeline.">
 <title>Chronicle — Napoleon</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 <a class="skip" href="#feedCol">Skip to the feed</a>
@@ -70,16 +70,6 @@
             <button id="jumpBtn">Go</button>
           </div>
         </div>
-
-        <div class="field">
-          <label class="lbl" for="followFilter">Accounts</label>
-          <select id="followFilter"><option value="all">All accounts</option><option value="following">Following only</option></select>
-        </div>
-
-        <div class="field">
-          <label class="lbl">Reading mode</label>
-          <label class="check"><input type="checkbox" id="spoilerToggle"> Spoiler-free</label>
-        </div>
       </div>
     </aside>
 
@@ -93,6 +83,7 @@
     </section>
   </main>
   <div id="profileModal" hidden><div id="profileCard"></div></div>
+  <footer id="siteFoot" class="gray">Tweets are AI-assisted modern paraphrases. Verify before quoting.</footer>
 </div>
 <script src="app.js"></script>
 </body>

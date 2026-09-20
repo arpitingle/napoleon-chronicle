@@ -15,7 +15,7 @@ Run from anywhere:
   python3 sources/verify.py --strict       # warnings fail too (use in CI)
   python3 sources/verify.py --check-urls   # also HEAD every archive.org link
 """
-import argparse, hashlib, json, os, re
+import argparse, hashlib, json, os, re, sys
 from collections import Counter
 from datetime import date, timedelta
 
@@ -120,11 +120,105 @@ def check_shards(idx):
     return posts
 
 
+def check_voices(posts):
+    """A voice tweet must be contained in its own verbatim quote (minus the
+    @mention). A tweet saying what its quote doesn't say reads as fake."""
+    norm = lambda s: re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+    n = 0
+    for p in posts:
+        v = p.get("voice")
+        if not v:
+            continue
+        n += 1
+        body = re.sub(r"^@\w+\s+", "", v)
+        if norm(body) and norm(body) not in norm(p.get("displayText") or ""):
+            err("%s voice is not contained in its displayText: %r"
+                % (p.get("id"), body[:80]))
+    return n
+
+
+def check_tweets(posts):
+    """A paraphrase tweet is first-person voice, tweet-length, and free of
+    dates and formatting debris. Anything else reads as broken or fake."""
+    fp = re.compile(r"\b(I|we|my|our|me|us|you|your)\b", re.I)
+    # Full month names, dotted abbreviations and years can never appear in
+    # a dateless paraphrase. Bare capitalized May/March/Mar and undotted
+    # capitalized abbreviations are checked case-sensitively below:
+    # lowercase may/march are ordinary verbs ("I may march").
+    # NOTE: every abbreviation alternative ends in a period or \b, so it
+    # can never match a prefix like "dec" in "decides".
+    dates = re.compile(
+        r"\b(?:January|February|April|June|July|August|September|October|"
+        r"November|December)\b"
+        r"|\b(?:jan|feb|apr|jun|jul|aug|sep|sept|oct|nov|dec)\."
+        r"|\b1[789]\d\d\b|\b1[78]\s\d\d\b"
+        r"|\b\d{1,2}(st|nd|rd|th)\b|\b\d+d\b",
+        re.I)
+    dates_cap = re.compile(
+        r"\bMay\b|\bMarch\b|\bMar\."
+        r"|\b(?:Jan|Feb|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b")
+    debris = re.compile(r"  |\s[,.]|,\s*,|(\s|--|-|\()\s*$")
+    for p in posts:
+        t = p.get("tweet")
+        if not t:
+            continue
+        rid = p.get("id")
+        if len(t) > 280:
+            err("%s paraphrase tweet is %d chars (limit 280)" % (rid, len(t)))
+        if not fp.search(t):
+            err("%s paraphrase tweet lacks first-person voice: %r"
+                % (rid, t[:80]))
+        m = dates.search(t) or dates_cap.search(t)
+        if m:
+            err("%s paraphrase tweet carries a date token %r: %r"
+                % (rid, m.group(0), t[:100]))
+        if debris.search(t):
+            err("%s paraphrase tweet carries formatting debris: %r"
+                % (rid, t[:100]))
+
+
 def check_referential(posts, idx):
     ids = Counter(p["id"] for p in posts)
     dup = [i for i, c in ids.items() if c > 1]
     if dup:
         err("duplicate ids across shards: %s" % dup[:5])
+    foreign = sorted({p.get("author") for p in posts
+                      if p.get("author") != "Napoleon Bonaparte"})
+    if foreign:
+        err("non-Napoleon records published (feed is his letters only): %s"
+            % foreign)
+
+    boiler = [p["id"] for p in posts
+              if re.match(r"^letter to .+ from .+", p.get("context") or "",
+                           re.I)
+              and "Full text in the" in (p.get("context") or "")]
+    if boiler:
+        err("%d records still carry bulk boilerplate context (rebuild the "
+            "overrides): e.g. %s" % (len(boiler), boiler[:3]))
+    ov_path = os.path.join(ROOT, "sources", "context_overrides.json")
+    if os.path.exists(ov_path):
+        try:
+            ov = json.load(open(ov_path, encoding="utf-8"))
+        except Exception as e:
+            err("context_overrides.json is not valid JSON: %s" % e)
+            ov = {}
+        try:
+            sys.path.insert(0, os.path.join(ROOT, "sources"))
+            from common import DROP_IDS
+        except Exception:
+            DROP_IDS = set()
+        for kind in ("contexts", "voices", "tweets"):
+            stray = [i for i in ov.get(kind, {}) if i not in ids
+                     and i not in DROP_IDS]
+            if stray:
+                err("context overrides[%s] matching no published record: %s"
+                    % (kind, stray[:5]))
+    for p in posts:
+        if "voice" in p and not (p["voice"] or "").strip():
+            err("%s carries an empty voice tweet" % p.get("id"))
+    for p in posts:
+        if "tweet" in p and not (p["tweet"] or "").strip():
+            err("%s carries an empty paraphrase tweet" % p.get("id"))
 
     ev_ids = {e["id"] for e in idx.get("events", [])}
     bad = sorted({e for p in posts for e in p.get("eventIds", []) if e not in ev_ids})
@@ -291,6 +385,8 @@ def main():
     if idx:
         posts = check_shards(idx)
         check_referential(posts, idx)
+        check_voices(posts)
+        check_tweets(posts)
         check_coverage(posts, idx)
         check_content(posts, idx)
         check_app_refs()

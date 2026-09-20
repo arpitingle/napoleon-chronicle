@@ -2,8 +2,12 @@
 
 ## What may be published
 
-Only records carrying `editorialStatus: "verified"` reach the feed. Nothing else
-is published, and `verify.py` fails the build if a shard contains anything else.
+Only Napoleon Bonaparte's own letters, orders, proclamations and
+despatches — and only records carrying `editorialStatus: "verified"`.
+Wellington despatches, Directory orders, Nelson letters and St Helena
+eyewitness accounts (Warden and company) are collected in the slices as raw
+material but never published; `build_index.py` skips them loudly and
+`verify.py` fails the build if one slips through. Nothing else is published.
 
 ## Sourcing rule
 
@@ -31,6 +35,46 @@ vivid or consequential language is rewarded, bureaucratic boilerplate
 ("you will find enclosed…", "article 1") and OCR garbage are penalised. If
 nothing clears the floor the document **sits out**. Coverage is therefore
 uneven by design — honest gaps, not filler.
+
+## Summaries
+
+The tweet is Napoleon in the first person. Where the project has moved
+past extraction, the tweet is a hand-written modern paraphrase of the
+whole letter in his voice (`sources/tweet_paraphrases.json`, one tweet per
+letter, ≤280 characters) — dramatization, not quotation, disclosed in the
+Source panel ("a modern paraphrase in his voice") with the verbatim quote
+always one tap away under Verbatim. Every paraphrase is grounded strictly
+in the letter's own content: no invented facts, people, or numbers.
+
+Where no paraphrase exists yet, the tweet falls back to an extractive
+first-person voice line (picked, never composed), then to the editorial
+narrative. Iron rule, enforced by `verify.py`: **an extractive tweet is
+always contained in its own verbatim quote** (minus the @mention).
+
+Under a voice tweet sits the context line: scene (the record's event moment)
+plus frame (the addressee with a rostered factual role). Behind Verbatim
+sits the full quote, unaltered.
+
+Hand-written contexts set the house style ("Ultimatum season."). The 641
+bulk records once carried only boilerplate ("Letter to X from Y. Full
+text…"); their narratives are drafted extractively (`narrate_contexts.py`:
+event scene + roster frame + letter clause, date-gated so no future blurb
+leaks into a past letter, with junk/dictionary/chapter-head gates) plus
+editor review of every flagged draft (`hand_contexts.json`). Voice lines
+come from the same script (first-person, self-contained, @mention only for
+a resolvable addressee). Published via `context_overrides.json`, applied by
+`build_index.py`; `verify.py` fails if boilerplate returns. Machine drafts
+stay out of `sources/*.txt` corpora and `data/nap_*.json` slices — they live
+only in the overrides file and the shards built from it.
+
+## Threads (retired)
+
+Long letters briefly shipped second tweets (`nap-YYYYMMDD-9X` thread twins).
+Retired: one letter, one tweet. Twins duplicated their parents too often,
+and the feature's complexity (cross-field dedupe, id ranges) outweighed a
+handful of extra posts. The builder is deleted; the lesson stays: any future
+multi-extract must pass twin-vs-parent containment checks in both
+directions before review.
 
 ## Labels
 

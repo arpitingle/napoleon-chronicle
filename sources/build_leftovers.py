@@ -60,13 +60,13 @@ M = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
      "Nov": 11, "December": 12, "Dec": 12, "Feb": 2, "Mar": 3, "Apr": 4, "Jan": 1,
      "Aug": 8, "Oct": 10}
 WCTX = {
- 0: ("empire-admin", "India 1800: the other empire rising."),
- 1: ("empire-admin", "Poona 1803: subsidiary alliances."),
- 2: ("empire-admin", "Poona 1804: Mahratta wars."),
+ 0: ("empire-admin", "India: the other empire rising."),
+ 1: ("empire-admin", "Poona: subsidiary alliances."),
+ 2: ("empire-admin", "Poona: Mahratta wars."),
  4: ("peninsular-1808", "Masséna's retreat watched from Lonzao."),
  5: ("peninsular-1808", "Portugal administered."),
  8: ("peninsular-1808", "Discipline foundations: NCOs."),
- 9: ("peninsular-1808", "Officers' conduct regulated, Nov 1812."),
+ 9: ("peninsular-1808", "Officers' conduct regulated."),
  12: ("france-1814", "Toulouse aftermath staff work."),
  13: ("france-1814", "Toulouse: military secretary's orders."),
 }

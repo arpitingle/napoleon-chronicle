@@ -93,7 +93,7 @@
    "italy-1796"
   ],
   "editorialStatus": "verified",
-  "context": "Dateline partly illegible in scan; placed by content after Montenotte–Millesimo (12–14 Apr). Fighting Paris as well as Piedmont: no engineers, no artillery officers sent. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Dateline partly illegible in scan; placed by content after Montenotte–Millesimo. Fighting Paris as well as Piedmont: no engineers, no artillery officers sent. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17960423-05",
@@ -117,8 +117,7 @@
    "italy-1796"
   ],
   "editorialStatus": "verified",
-  "context": "Dateline partly illegible in scan; placed by content after Mondovi (21–22 Apr). Mondovi report: the army he found — without bread, without discipline — and made examples. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance. French original verified in the Second Empire Correspondance, Vol. I (Paris, 1858) — public domain.",
-  "originalText": "Le soldat sans pain se porte à des excès de fureur qui font rougir d'être homme. […] Je ramènerai l'ordre, ou je cesserai de commander à ces brigands. J'ai 100,000 hommes contre moi, qui n'en ai que 34,000 d'infanterie et 3,500 de cavalerie."
+  "context": "Dateline partly illegible in scan; placed by content after Mondovi. Mondovi report: the army he found — without bread, without discipline — and made examples. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17960426-06",
@@ -238,7 +237,7 @@
    "italy-1796"
   ],
   "editorialStatus": "verified",
-  "context": "Dateline partly illegible in scan; placed by content at the Po crossing (7 May). 'We have at last crossed the Po': the second campaign opens; Beaulieu wants genius. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Dateline partly illegible in scan; placed by content at the Po crossing. 'We have at last crossed the Po': the second campaign opens; Beaulieu wants genius. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17960501-11",
@@ -286,7 +285,7 @@
    "italy-1796"
   ],
   "editorialStatus": "verified",
-  "context": "Dateline partly illegible in scan; placed by content amid the Milan proclamations (mid-May). Proclamation: fraternity for the peaceful — fire from heaven for rebels. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Dateline partly illegible in scan; placed by content amid the Milan proclamations. Proclamation: fraternity for the peaceful — fire from heaven for rebels. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17960529-13",
@@ -457,6 +456,30 @@
   "context": "Alvinzi on the Brenta; Wurmser in extremis; an army of 38,500 that should be 51,000. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
+  "id": "nap-17970201-20",
+  "author": "Napoleon Bonaparte",
+  "handle": "@bonaparte",
+  "accountType": "person",
+  "faction": "Army of Italy",
+  "date": "1797-02-01",
+  "timeLabel": "TIME UNCERTAIN",
+  "timePrecision": "day",
+  "location": "Tolentino",
+  "originalLanguage": "French",
+  "displayText": "“The Committee of Savants has reaped a good harvest at Ravenna, Rimini, Pesaro, Ancona, Loretto, and Perugia which will be at once forwarded to Paris. […]”",
+  "sourceTitle": "To the Directory, TOLENTINO, 1797-02-01",
+  "archive": "Bingham, Selection from the Letters and Despatches (London, 1884), Vol. I — public domain",
+  "sourceUrl": "https://archive.org/details/acp7797.0001.001.umich.edu",
+  "documentType": "letter",
+  "evidenceType": "TRANSLATION",
+  "dateCertainty": "approximate",
+  "eventIds": [
+   "campo-1797"
+  ],
+  "editorialStatus": "verified",
+  "context": "Tolentino: the Pope pays for peace. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+ },
+ {
   "id": "nap-17970416-21",
   "author": "Napoleon Bonaparte",
   "handle": "@bonaparte",
@@ -526,7 +549,7 @@
    "campo-1797"
   ],
   "editorialStatus": "verified",
-  "context": "14 July order of the day: the fallen as example. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Festival order of the day: the fallen as example. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17970726-24",
@@ -694,7 +717,7 @@
    "egypt-1798"
   ],
   "editorialStatus": "verified",
-  "context": "Proclamation after the October revolt. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Proclamation after the Cairo revolt. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17981202-31",
@@ -718,7 +741,7 @@
    "egypt-1798"
   ],
   "editorialStatus": "verified",
-  "context": "December night orders: troopers at 2 a.m., Arabs at dawn. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Night orders: troopers at 2 a.m., Arabs at dawn. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17990102-32",
@@ -934,7 +957,7 @@
    "marengo-1800"
   ],
   "editorialStatus": "verified",
-  "context": "Virtuosos for the 14 July fête — war administration as usual. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
+  "context": "Virtuosos for the national fête — war administration as usual. English from the 1884 Bingham translation (public domain); French in the Second Empire Correspondance."
  },
  {
   "id": "nap-17940520-41",

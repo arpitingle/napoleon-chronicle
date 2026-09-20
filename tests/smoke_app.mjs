@@ -160,7 +160,7 @@ ok('year picker lists years with their counts', /1789 · \d+/.test(get('selYear'
 ok('month picker is populated', /January/.test(get('selMonth').innerHTML) && /December/.test(get('selMonth').innerHTML));
 ok('month options carry counts', / · \d+| · —/.test(get('selMonth').innerHTML));
 
-console.log('\nfull text, not two lines');
+console.log('\nvoice tweets, caps, and stripped chrome');
 const eraId = index.shardByYear[busiest.slice(0, 4)];
 const eraFile = index.shards.find(s => s.id === eraId).file;
 const recs = JSON.parse(fs.readFileSync(path.join(ROOT, eraFile), 'utf8')).filter(r => r.date === busiest);
@@ -170,15 +170,67 @@ await runIn(`enter({d:${rbd},m:${rbm},y:${rby}})`);
 await runIn(`enter({d:${rbd},m:${rbm},y:${rby}})`);
 const cards = [];
 for (const child of get('feed').children) cards.push(...(child.children.length ? child.children : [child]));
+const headOf = c => (c.innerHTML.match(/class="tweet-text">([\s\S]*?)<\/div>/) || [])[1] || '';
 ok('one card per document', cards.length === recs.length, cards.length + ' cards vs ' + recs.length + ' records');
-const fullShown = recs.filter(r => cards.some(c => c.innerHTML.includes(r.displayText))).length;
-ok('every quote renders in full', fullShown === recs.length, fullShown + '/' + recs.length + ' in full');
-ok('no card asks you to expand a short quote', cards.every(c => !c.innerHTML.includes('Show more')));
-ok('source line shows without a click', cards.every(c => /tweet-meta/.test(c.innerHTML)));
-ok('every card opens on a caption, not the raw quote', cards.every(c => /class="tweet-text"/.test(c.innerHTML) && /caption · quoted words below/.test(c.innerHTML)));
-ok('verbatim quote is collapsed but present', cards.every(c => /class="quote" hidden/.test(c.innerHTML)));
-ok('quoted-words expander is wired', cards.every(c => /data-k="quote"/.test(c.innerHTML)));
-ok('no leftover frame chrome', cards.every(c => !/class="frame"|chain-next/.test(c.innerHTML)) && !fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8').includes('.frame{'));
+ok('every card leads with a context headline', cards.every(c => headOf(c).trim().length > 10), cards.map(headOf).join(' | ').slice(0, 120));
+const withVoice = recs.map((r, i) => [r, cards[i]]).filter(([r]) => r.voice && !r.tweet);
+const withoutVoice = recs.map((r, i) => [r, cards[i]]).filter(([r]) => !r.voice && !r.tweet);
+const withTweet = recs.map((r, i) => [r, cards[i]]).filter(([r]) => r.tweet);
+ok('records with a voice line tweet it', withVoice.every(([r, c]) => headOf(c).includes((r.voice || '').slice(0, 60))),
+  withVoice.length + ' voice cards');
+ok('paraphrased records tweet the paraphrase', withTweet.every(([r, c]) => headOf(c).includes((r.tweet || '').slice(0, 60))),
+  withTweet.length + ' paraphrase cards');
+ok('voice lines are first-person', withVoice.every(([r, c]) => /@\w+|\b(I|we|my|our|me|myself)\b|^(Let|Write|See|Take|Send|Tell|Reply|Be|Soldiers|Citizens)/i.test(headOf(c))));
+for (const [r, c] of withoutVoice) {
+  const head = await runIn(`headlineFor(${JSON.stringify(r)})`);
+  const live = await runIn(`voiceFor(${JSON.stringify({ sourceTitle: r.sourceTitle, location: r.location, date: r.date, displayText: r.displayText })})`);
+  if (headOf(c) !== (live || head)) { ok('voiceless records fall back to the narrative', false, r.id); break; }
+}
+ok('voiceless records fall back to the narrative', true);
+ok('no context cap line on any card (lives in Source & context)', cards.every(c => !/tweet-cap/.test(c.innerHTML)));
+ok('no card shows the whole quote as its tweet', cards.every(c => !c.innerHTML.match(/class="tweet-text">[\s\S]*?[\u201c"]/) ||
+  !recs.some(r => r.displayText.length < 200 && headOf(c).includes(r.displayText))));
+ok('verbatim sits behind its button, hidden', cards.every(c => /class="verbatim" hidden/.test(c.innerHTML) || !/data-k="quote"/.test(c.innerHTML)));
+ok('voice picker takes first-person clauses (codicil regression)', (() => {
+  const v = runIn(`voiceFor({sourceTitle:'Codicil on burial, April 1821', location:'Longwood', date:'1821-04-15', displayText:'“I desire my ashes to rest on the banks of the Seine, amid the French people I loved so well. […]”'})`);
+  return /I desire my ashes/.test(v || '');
+})());
+ok('capitalised You/My openers count as first-person', (() => {
+  const a = runIn(`voiceFor({sourceTitle:'To Prince Joseph, Paris, 1806-02-01', location:'Paris', date:'1806-02-01', displayText:'“Disarm Naples, and levy a contribution of 10,000,000 francs on the city. It will be paid easily. You have certain resources by confiscating English merchandise.”'})`);
+  const b = runIn(`voiceFor({sourceTitle:'To M. Fouche, Paris, 1806-02-01', location:'Paris', date:'1806-02-01', displayText:'“My intention is consequently that the religious journals shall cease to appear.”'})`);
+  return /You have certain resources/.test(a || '') && /My intention is consequently/.test(b || '');
+})());
+ok('paraphrase tweets render where present, with disclosure', await (async () => {
+  const html = runIn(`card({author:'Napoleon Bonaparte',handle:'@bonaparte',accountType:'person',faction:'Empire',date:'1806-02-01',timeLabel:'TIME UNCERTAIN',timePrecision:'day',location:'Paris',originalLanguage:'French',displayText:'“Disarm Naples.”',sourceTitle:'To Prince Joseph, Paris, 1806-02-01',archive:'A',sourceUrl:'http://x',documentType:'letter',evidenceType:'TRANSLATION',dateCertainty:'certain',eventIds:[],editorialStatus:'verified',context:'Paris. Some context.',tweet:'You cannot want money. Take ten million francs.'}).innerHTML`);
+  return html.includes('You cannot want money') && /paraphrase in his voice/.test(html);
+})());
+ok('whole-quote tweets hide their verbatim block', (() => {
+  const html = runIn(`card({author:'Napoleon Bonaparte',handle:'@bonaparte',accountType:'person',faction:'Empire',date:'1806-02-01',timeLabel:'TIME UNCERTAIN',timePrecision:'day',location:'Paris',originalLanguage:'French',displayText:'“I die.”',sourceTitle:'X',archive:'A',sourceUrl:'http://x',documentType:'letter',evidenceType:'TRANSLATION',dateCertainty:'certain',eventIds:[],editorialStatus:'verified',context:'A short note here.',voice:'I die.'}).innerHTML`);
+  const html2 = runIn(`card({author:'Napoleon Bonaparte',handle:'@bonaparte',accountType:'person',faction:'Empire',date:'1806-02-01',timeLabel:'TIME UNCERTAIN',timePrecision:'day',location:'Paris',originalLanguage:'French',displayText:'“I die and I return to haunt the Tuileries at midnight.”',sourceTitle:'X',archive:'A',sourceUrl:'http://x',documentType:'letter',evidenceType:'TRANSLATION',dateCertainty:'certain',eventIds:[],editorialStatus:'verified',context:'A short note here.',voice:'I die.'}).innerHTML`);
+  return !/verbatim/.test(html) && /verbatim/.test(html2);
+})());
+ok('verbatim text is in the card (full, cut+rest, or tweeted whole)', recs.filter(r => cards.some(c => {
+  if (c.innerHTML.includes(r.displayText)) return true;
+  if (r.displayText.length > 420 && c.innerHTML.includes(r.displayText.slice(0, 60))) return true;
+  const t = (c.innerHTML.match(/class="tweet-text">([\s\S]*?)<\/div>/) || [])[1] || '';
+  const n = s => s.toLowerCase().replace(/[^a-z]/g, '');
+  return n(t) === n(r.displayText); // dupQuote: tweet IS the quote
+})).length === recs.length);
+ok('no source-title meta line on any card (lives in Source & context)', cards.every(c => !/tweet-meta/.test(c.innerHTML)));
+ok('source lives in the context panel', cards.every((c, i) => c.innerHTML.includes(recs[i].sourceTitle)));
+ok('no evidence pills on any card', cards.every(c => !/class="ev"/.test(c.innerHTML)));
+ok('no dates in tweet text (the UI shows the date)', cards.every(c => {
+  const t = headOf(c);
+  return !/\b(?:January|February|April|June|July|August|September|October|November|December)\b/i.test(t) &&
+    !/\bMay\b/.test(t) && !/\bMarch\b/.test(t) &&
+    !/\b1[789]\d\d\b/.test(t) && !/\b1[78]\s\d\d\b/.test(t) && !/\b\d{1,2}(st|nd|rd|th)\b/.test(t) &&
+    !/\d{4}-\d{2}-\d{2}/.test(t);
+}), cards.map(headOf).join(' | ').slice(0, 200));
+ok('no builder notes leak into cards', cards.every(c => !/Trivial OCR repairs|single characters/i.test(headOf(c))));
+ok('thread shows one Follow button, not one per card', (() => {
+  const threads = get('feed').children.filter(c => c.children.length > 1);
+  return threads.every(t => t.children.filter(x => /follow-btn/.test(x.innerHTML)).length === 1);
+})());
 ok('longest excerpt is inside the clamp', Math.max(...recs.map(r => r.displayText.length)) <= 420,
    'max ' + Math.max(...recs.map(r => r.displayText.length)) + ' chars');
 

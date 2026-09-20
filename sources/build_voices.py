@@ -23,7 +23,7 @@ WSEL = [
  (10, "Contractors and traducers: the army's parasites.", "peninsular-1808"),
  (11, "Portuguese paid, Portuguese fight: regularity wins.", "peninsular-1808"),
  (14, "Toulouse taken; Buonaparte overturned.", "france-1814"),
- (15, "Intelligence charlatans, Brussels, May 1815.", "waterloo-1815"),
+ (15, "Intelligence charlatans in Brussels.", "waterloo-1815"),
  (16, "French army dissolving after Waterloo.", "waterloo-1815"),
  (17, "No laying down arms: abdication insufficient security.", "waterloo-1815"),
 ]
@@ -55,9 +55,9 @@ def lasc(probe, length=1400):
 
 LSEL = [
  ("Abolit ten o'clock, the Emperor entered my apartment", "1816-07-10", "certain",
-  "Longwood", "sthelena-1815", "July 10, 1816, dated in print: walk, calash, Beaumarchais read."),
+  "Longwood", "sthelena-1815", "Walk, calash, Beaumarchais read."),
  ("Rostopchin baving been pronounced", "1816-01-01", "approximate",
-  "Longwood", "sthelena-1815", "On Moscow's burning and Rostopchin; undated conversation, 1816."),
+  "Longwood", "sthelena-1815", "On Moscow's burning and Rostopchin; undated conversation."),
  ("Blucher and the Duke of Wellington were surprized", "1816-01-01", "approximate",
   "Longwood", "waterloo-1815", "Dictated Waterloo narrative: the surprise opening."),
  ("Quatre-Bras", "1816-01-01", "approximate",
@@ -177,8 +177,8 @@ def ev_label_hour(h):
 
 JSEL = [
  ("1803-06-23", "1803-06-23", "certain", None, "consulate-1802", "Malmaison summer: health anxieties."),
- ("1803-07-01", "1803-07-01", "certain", None, "consulate-1802", "29 June letter answered; health unwritten."),
- ("1801-07-18", "1807-07-18", "approximate", None, "tilsit-1807", "Printed 1801 in error; Dresden stay was July 1807 on the Tilsit return."),
+ ("1803-07-01", "1803-07-01", "certain", None, "consulate-1802", "Her letter answered; health unwritten."),
+ ("1801-07-18", "1807-07-18", "approximate", None, "tilsit-1807", "Misprinted year; Dresden stay on the Tilsit return."),
 ]
 
 for find_iso, iso, cert, tlab, eid, ctx in JSEL:

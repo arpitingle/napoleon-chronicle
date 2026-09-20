@@ -92,8 +92,6 @@ select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
 .jump-row button{font:inherit;font-size:13.5px;background:#fff;border:1px solid var(--accent);
   color:var(--accent);border-radius:100px;padding:7px 15px;cursor:pointer;font-weight:600}
 .jump-row button:hover{background:var(--accent-soft)}
-.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-soft);cursor:pointer}
-.check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
 .gray{color:var(--muted)}
 
 /* ---------- feed head ---------- */
@@ -119,9 +117,7 @@ select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
 .verified{color:var(--accent);font-size:13px}
 .tweet-text{margin:5px 0 8px;font-size:15px;line-height:1.55;color:var(--ink);overflow-wrap:anywhere}
 .tweet-text .more{color:var(--accent);text-decoration:none;font-size:13.5px;white-space:nowrap;font-weight:600}
-.tweet-meta{font-size:13px;color:var(--ink-soft);margin-bottom:2px}
 .tweet-src{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.tweet-src .ev{border:1px solid var(--line);border-radius:100px;padding:1px 8px;background:var(--bg);white-space:nowrap}
 .tweet-actions{display:flex;gap:22px;margin-top:10px}
 .tweet-actions button{background:none;border:0;padding:0;font:inherit;font-size:13px;font-weight:600;
   color:var(--muted);cursor:pointer}
@@ -129,9 +125,11 @@ select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
 .follow-btn{float:right;background:#fff;border:1px solid var(--accent);color:var(--accent);
   border-radius:100px;padding:3px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .follow-btn:hover{background:var(--accent-soft)}
-.orig,.ctx{display:none;margin-top:10px;padding:11px 13px;font-size:13.5px;line-height:1.55;
+.orig,.ctx,.verbatim{display:none;margin-top:10px;padding:11px 13px;font-size:13.5px;line-height:1.55;
   background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-soft)}
-.orig.show,.ctx.show{display:block}
+.orig.show,.ctx.show,.verbatim.show{display:block}
+.verbatim{border-left:3px solid var(--line);font-style:italic}
+.verbatim .more{color:var(--accent);font-weight:600;font-size:13px;white-space:nowrap}
 .orig b,.ctx b{color:var(--ink)}
 
 /* ---------- threads ---------- */
@@ -190,11 +188,5 @@ select:hover,input[type=date]:hover{border-color:rgba(255,255,255,.55)}
   #topbar .tweet-btn{padding:6px 12px;font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-/* ---------- caption + verbatim quote ---------- */
-.quote{display:none;margin-top:8px;padding:11px 13px;font-size:13.5px;line-height:1.55;
-  background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-soft)}
-.quote.show{display:block}
-.quote b{color:var(--ink)}
-.cap{font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:100px;
-  padding:1px 8px;white-space:nowrap}
+#siteFoot{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);max-width:92vw;text-align:center;font-size:12px;line-height:1.5;background:var(--bg);padding:4px 12px;z-index:5}
+#app{padding-bottom:44px}

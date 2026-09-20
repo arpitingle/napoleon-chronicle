@@ -52,7 +52,7 @@ REC = [
   "Le général commandant à Milan fera partir au plus tôt pour Peschiera tout ce qui se trouve à Milan de disponible en cavalerie.",
   "Milan sends all disposable cavalry to Peschiera at once."),
  ("1796-09-07", 2, "Italy", "To Masséna (2 a.m.)", "italy-1796",
-  "March the 22nd at 2 a.m. in greatest order.",
+  "Masséna marches at 2 a.m. in greatest order.",
   "Le général en chef ordonne au général Masséna de partir, demain 22, à deux heures du matin, dans le plus grand ordre.",
   "Masséna marches tomorrow 22nd at 2 a.m. in greatest order."),
  ("1796-09-09", 2, "Italy", "To Augereau (9:30 p.m.)", "italy-1796",
