@@ -5,7 +5,7 @@ let AUTHOR={}, AVATAR={};
 let cur={d:12,m:4,y:1796};
 let followed=new Set(JSON.parse(localStorage.getItem('nap_follow')||'[]'));
 let replayOn=false, ready=false, DEFAULT=null;
-let view='date', pendingFlash=null;
+let view='date', pendingFlash=null, flashEl=null;
 const problems=[];
 const shardCache=new Map();
 const seenIds=new Set();
@@ -201,7 +201,7 @@ function visiblePosts(){
 }
 function redact(t,on){if(!on)return t;return t.replace(/guillotin\w*|execut\w*|behead\w*|massacr\w*/gi,'████')}
 function render(){
-  destroyMap();
+  destroyMap();flashEl=null;
   const{list,target,spoiler}=visiblePosts();
   $('#curDate').textContent=fmt(cur.d,cur.m,cur.y);
   $('#tweetCount').textContent=list.length;
@@ -385,6 +385,7 @@ function card(p,spoiler,nth,ofN){
   if(more)more.onclick=e=>{e.stopPropagation();e.preventDefault();show(verb,d.querySelector('[data-k="quote"]'),true);const r=d.querySelector('.rest');if(r)r.hidden=false;more.hidden=true};
   const fb=d.querySelector('.follow-btn');
   if(fb)fb.onclick=e=>{e.stopPropagation();followed.has(p.author)?followed.delete(p.author):followed.add(p.author);saveFollow();render()};
+  if(pendingFlash&&p.id===pendingFlash)flashEl=d;
   d.querySelector('.author').onclick=e=>{e.stopPropagation();openProfile(p.author)};
   d.onclick=()=>show(verb,d.querySelector('[data-k="quote"]'),!(verb.classList.contains('show')));
   return d;
@@ -448,9 +449,9 @@ function syncHash(){
   }catch(e){}
 }
 function flashPending(){
-  if(!pendingFlash)return;
-  const el=document.getElementById&&document.getElementById('p-'+pendingFlash);
-  if(el){el.scrollIntoView({block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2200)}
+  if(!pendingFlash||!flashEl||!flashEl.scrollIntoView)return;
+  try{flashEl.scrollIntoView({block:'center'})}catch(e){}
+  flashEl.classList.add('flash');setTimeout(()=>flashEl.classList.remove('flash'),2200);
 }
 async function enterPost(id){$('#landing').style.display='none';$('#app').hidden=false;await goToPost(id);window.scrollTo(0,0)}
 if(typeof window!=='undefined'&&window.addEventListener){
@@ -689,16 +690,15 @@ function applyTheme(){
   const b=$('#btnTheme');if(b)b.textContent=t==='dark'?'☀️ Light':'🌙 Dark';
 }
 function wireExplore(){
-  const w=(id,fn)=>{const el=$('#'+id);if(el)el.onclick=fn};
-  w('btnSearch',()=>searchView());
-  w('btnMap',()=>mapView());
-  w('btnPeople',()=>peopleView());
-  w('btnSaved',()=>savedView());
-  w('btnTheme',()=>{
+  $('#btnSearch').onclick=()=>searchView();
+  $('#btnMap').onclick=()=>mapView();
+  $('#btnPeople').onclick=()=>peopleView();
+  $('#btnSaved').onclick=()=>savedView();
+  $('#btnTheme').onclick=()=>{
     let t='light';
     try{t=localStorage.getItem('nap_theme')||'light';t=t==='dark'?'light':'dark';localStorage.setItem('nap_theme',t)}catch(e){}
     applyTheme();
-  });
+  };
 }
 wireExplore();
 applyTheme();

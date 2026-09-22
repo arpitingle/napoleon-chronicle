@@ -344,7 +344,7 @@ def check_app_refs():
     if broken:
         err("app.js references DOM ids that do not exist: %s" % broken)
     STRUCTURAL = {"landing", "app", "layout", "leftCol", "feedCol", "topbar",
-                  "timelineHead"}          # layout hooks, addressed by CSS only
+                  "timelineHead", "siteFoot", "exploreCard"}  # layout hooks, addressed by CSS only
     unused = sorted(in_html - referenced - built - STRUCTURAL)
     if unused:
         warn("index.html ids never referenced by app.js: %s" % unused)
