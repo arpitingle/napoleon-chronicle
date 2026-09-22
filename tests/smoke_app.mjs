@@ -234,5 +234,53 @@ ok('thread shows one Follow button, not one per card', (() => {
 ok('longest excerpt is inside the clamp', Math.max(...recs.map(r => r.displayText.length)) <= 420,
    'max ' + Math.max(...recs.map(r => r.displayText.length)) + ' chars');
 
+console.log('\ndeep links, search, people, map helpers');
+ok('hash parses dates', (() => {
+  const r = runIn(`parseHash('#/d/1796-03-27')`);
+  return r && r.kind === 'date' && r.o.y === 1796 && r.o.m === 3 && r.o.d === 27;
+})());
+ok('hash parses post ids', (() => {
+  const r = runIn(`parseHash('#/p/nap-1796-03-27-02')`);
+  return r && r.kind === 'post' && r.id === 'nap-1796-03-27-02';
+})());
+ok('hash rejects junk', runIn(`parseHash('#/x/nope')`) === null && runIn(`parseHash('')`) === null);
+ok('addressees normalize across variants', (() => {
+  const a = runIn(`normalizeAddressee('To M. De Talleyrand, Paris, 1805-01-01').key`);
+  const b = runIn(`normalizeAddressee('To Talleyrand, St. Cloud, 1803-05-01').key`);
+  const c = runIn(`normalizeAddressee('To Josephine at Milan, Verona, 1796-11-09').key`);
+  const d = runIn(`normalizeAddressee('To The Directory, Paris, 1796-03-01').key`);
+  const e = runIn(`normalizeAddressee('To Prince Joseph, Paris, 1806-02-01').key`);
+  const f = runIn(`normalizeAddressee('To King Joseph, Paris, 1814-01-10').key`);
+  return a === b && c === 'josephine' && d === 'thedirectory' && e === f;
+})(), 'talleyrand/josephine/directory/joseph keys');
+ok('addressee parser rejects OCR junk', runIn(`normalizeAddressee('To X12, Paris, 1800-01-01')`) === null);
+ok('search matches every token, accent-blind', (() => {
+  const p = { tweet: 'I love Josephine', voice: '', displayText: 'Égypte', sourceTitle: 'To Josephine, Paris', location: 'Paris' };
+  const yes = runIn(`matchQuery(${JSON.stringify(p)}, ['josephine'])`) && runIn(`matchQuery(${JSON.stringify(p)}, ['egypte'])`);
+  const no = runIn(`matchQuery(${JSON.stringify(p)}, ['josephine', 'moscow'])`);
+  return yes && !no;
+})());
+ok('map keys resolve places and skip vague ones', (() => {
+  const a = runIn(`placeKey('St. Cloud')`) === 'st. cloud';
+  const b = runIn(`placeKey('Mayence')`) === 'mayence';
+  const c = runIn(`placeKey('Italy')`) === null && runIn(`placeKey('Off Malta')`) === null && runIn(`placeKey('Zanzibar')`) === null;
+  return a && b && c;
+})());
+ok('explore controls exist', ['btnSearch', 'btnMap', 'btnPeople', 'btnSaved', 'btnTheme'].every(id => get(id) && 'onclick' in get(id) || get(id)));
+
+console.log('\nviews render through the dashboard');
+await runIn('peopleView()');
+await wait(300);
+ok('people view lists correspondents', /prow/.test(get('peopleRes').innerHTML), get('peopleRes').innerHTML.slice(0, 100));
+await runIn('searchView()');
+ok('search view shows its box', /id="q"/.test(get('feed').innerHTML));
+await runIn('mapView()');
+await wait(300);
+ok('map view renders a map node and a place list', /id="map"/.test(get('feed').innerHTML) && /srow/.test(get('placeList').innerHTML));
+await runIn('savedView()');
+ok('saved view explains itself when empty', /Tap Save|bookmarked/.test(get('savedRes').innerHTML), get('savedRes').innerHTML.slice(0, 120));
+await runIn(`goToPost('nap-17960327-02')`);
+ok('post links resolve to their date', get('curDate').textContent === '27 March 1796', get('curDate').textContent);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

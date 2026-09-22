@@ -6,7 +6,8 @@
 <meta name="description" content="Napoleon's real letters, orders and proclamations, 1789-1821, as a timeline.">
 <title>Chronicle — Napoleon</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
-<link rel="stylesheet" href="styles.css?v=6">
+<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 <a class="skip" href="#feedCol">Skip to the feed</a>
@@ -71,6 +72,20 @@
           </div>
         </div>
       </div>
+      <div class="side-card" id="exploreCard">
+        <span class="lbl">Explore</span>
+        <div class="explore-row">
+          <button id="btnSearch">🔍 Search</button>
+          <button id="btnMap">🗺 Map</button>
+        </div>
+        <div class="explore-row">
+          <button id="btnPeople">🧵 People</button>
+          <button id="btnSaved">🔖 Saved<span id="savedCount"></span></button>
+        </div>
+        <div class="explore-row">
+          <button id="btnTheme">🌙 Dark</button>
+        </div>
+      </div>
     </aside>
 
     <section id="feedCol" aria-labelledby="timelineTitle">
@@ -85,6 +100,6 @@
   <div id="profileModal" hidden><div id="profileCard"></div></div>
   <footer id="siteFoot" class="gray">Tweets are AI-assisted modern paraphrases. Verify before quoting.</footer>
 </div>
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
