@@ -71,6 +71,35 @@ DROP_IDS = {
     "nap-18110901-520",  # dup of nap-18110901-18 (same Davout letter)
     "nap-18111231-526",  # dup of nap-18111231-20 (same Champagny letter)
     "nap-18140102-608",  # dup of nap-18140102-59 (same St Dizier letter)
+    "nap-17960527-701",  # corr: excerpt is filing close + next header only
+    "nap-18000112-703",  # corr: excerpt is signature + next header only
+    "nap-17960600-700",  # corr: edition dates it "June 1796" only; no day
+    "nap-18000427-701",  # corr: excerpt opens with filing debris ("', <")
+    "nap-17960504-19",   # Bingham narrator's account of a letter, not Napoleon's writing
+    "nap-17940104-700",  # corr: excerpt is a filing header, no letter text
+    "nap-17960530-700",  # corr: excerpt is filing close + next header only
+    "nap-17960622-700",  # corr: excerpt is signature + next header only
+    "nap-17960713-700",  # corr: excerpt ends mid-sentence, incomplete
+    "nap-17960728-702",  # corr: excerpt is filing close + next header only
+    "nap-17961119-703",  # corr: excerpt starts and ends mid-word, incomplete
+    "nap-17980803-700",  # corr: 42-char fragment, too thin for a record
+    "nap-17981006-701",  # corr: pay-table fragment + running head
+    "nap-17981116-701",  # corr: 50-char fragment, too thin for a record
+    "nap-18000118-702",  # corr: excerpt is a question fragment + signature
+    "nap-18000216-700",  # corr: excerpt is filing close + next header only
+    "nap-18000510-702",  # corr: excerpt is signature + next header only
+    "nap-18000715-703",  # corr: excerpt is signature + next header only
+    "nap-18001120-700",  # corr: excerpt is head debris, no letter text
+    "nap-18001222-700",  # corr: excerpt is signature + next header only
+    "nap-18010306-700",  # corr: excerpt is signature + next header only
+    "nap-18010413-702",  # corr: excerpt is signature + next header only
+    "nap-18010720-700",  # corr: excerpt is OCR salad, no readable text
+    "nap-18010723-700",  # corr: excerpt is signature + annex header only
+    "nap-18011115-700",  # corr: excerpt is filing close + next header only
+    "nap-18020210-704",  # corr: excerpt is signature + next header only
+    "nap-18021218-700",  # corr: excerpt is signature + next header only
+    "nap-18030923-700",  # corr: end-of-volume matter, not a letter
+    "nap-18020720-700",  # corr: excerpt is OCR salad, no readable text
 }
 
 # OCR-mangled datelines, lowercased: each maps to the real place.

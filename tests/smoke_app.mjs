@@ -182,14 +182,16 @@ ok('paraphrased records tweet the paraphrase', withTweet.every(([r, c]) => headO
   withTweet.length + ' paraphrase cards');
 ok('voice lines are first-person', withVoice.every(([r, c]) => /@\w+|\b(I|we|my|our|me|myself)\b|^(Let|Write|See|Take|Send|Tell|Reply|Be|Soldiers|Citizens)/i.test(headOf(c))));
 for (const [r, c] of withoutVoice) {
-  const head = await runIn(`headlineFor(${JSON.stringify(r)})`);
   const live = await runIn(`voiceFor(${JSON.stringify({ sourceTitle: r.sourceTitle, location: r.location, date: r.date, displayText: r.displayText })})`);
-  if (headOf(c) !== (live || head)) { ok('voiceless records fall back to the narrative', false, r.id); break; }
+  const expected = live || r.displayText || await runIn(`headlineFor(${JSON.stringify(r)})`);
+  if (headOf(c) !== expected) { ok('voiceless records use an extract or their source text', false, r.id); break; }
 }
-ok('voiceless records fall back to the narrative', true);
+ok('voiceless records use an extract or their source text', true);
 ok('no context cap line on any card (lives in Source & context)', cards.every(c => !/tweet-cap/.test(c.innerHTML)));
-ok('no card shows the whole quote as its tweet', cards.every(c => !c.innerHTML.match(/class="tweet-text">[\s\S]*?[\u201c"]/) ||
-  !recs.some(r => r.displayText.length < 200 && headOf(c).includes(r.displayText))));
+ok('no-tweet fallback never substitutes editorial context for the source', withoutVoice.every(([r, c]) => {
+  const live = runIn(`voiceFor(${JSON.stringify({ sourceTitle: r.sourceTitle, location: r.location, date: r.date, displayText: r.displayText })})`);
+  return !!live || headOf(c).includes(r.displayText || '');
+}));
 ok('verbatim sits behind its button, hidden', cards.every(c => /class="verbatim" hidden/.test(c.innerHTML) || !/data-k="quote"/.test(c.innerHTML)));
 ok('voice picker takes first-person clauses (codicil regression)', (() => {
   const v = runIn(`voiceFor({sourceTitle:'Codicil on burial, April 1821', location:'Longwood', date:'1821-04-15', displayText:'“I desire my ashes to rest on the banks of the Seine, amid the French people I loved so well. […]”'})`);

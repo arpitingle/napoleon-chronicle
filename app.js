@@ -3,7 +3,10 @@
 let POSTS=[], EVENTS=[], INDEX=null;
 let AUTHOR={}, AVATAR={};
 let cur={d:12,m:4,y:1796};
-let followed=new Set(JSON.parse(localStorage.getItem('nap_follow')||'[]'));
+function readStoredList(key){
+  try{const value=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(value)?value:[]}catch(e){return []}
+}
+let followed=new Set(readStoredList('nap_follow'));
 let replayOn=false, ready=false, DEFAULT=null;
 let view='date', pendingFlash=null, flashEl=null;
 const problems=[];
@@ -15,7 +18,7 @@ const MONTHS=['January','February','March','April','May','June','July','August',
 function fmt(d,m,y){return `${d} ${MONTHS[m-1]} ${y}`}
 function iso(o){return `${o.y}-${String(o.m).padStart(2,'0')}-${String(o.d).padStart(2,'0')}`}
 function parseIso(s){const[a,b,c]=s.split('-').map(Number);return{y:a,m:b,d:c}}
-function saveFollow(){localStorage.setItem('nap_follow',JSON.stringify([...followed]))}
+function saveFollow(){try{localStorage.setItem('nap_follow',JSON.stringify([...followed]))}catch(e){}}
 const EV_SHORT={'ORIGINAL MANUSCRIPT':'📜 manuscript','CONTEMPORARY NEWSPAPER':'📰 newspaper','OFFICIAL RECORD':'🏛 official','CONTEMPORARY TRANSCRIPT':'🗣 transcript','EYEWITNESS ACCOUNT':'👁 eyewitness','LATER MEMOIR':'💭 memoir','TRANSLATION':'🌐 translation','DATE APPROXIMATE':'~ approx date'};
 /* EV_SHORT no longer renders (badges removed) but stays as the display
    contract verify.py checks evidenceType values against. */
@@ -350,8 +353,10 @@ function card(p,spoiler,nth,ofN){
   const threadTag=ofN>1?`<span class="tag"> · 🧵 ${nth}/${ofN}</span>`:'';
   const voice=p.voice||voiceFor(p);
   const head=redact(headlineFor(p),spoiler);
-  const tweet=p.tweet?redact(p.tweet,spoiler):(voice?redact(voice,spoiler):head);
   const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
+  /* If neither an editorial paraphrase nor a source voice extract exists,
+     show the actual excerpt. Event context is editorial, not Napoleon's tweet. */
+  const tweet=p.tweet?redact(p.tweet,spoiler):(voice?redact(voice,spoiler):(full||head));
   const quoteHtml=sh?`“${redact(sh.cut,spoiler)}… <a href="#" class="more">Show more</a><span class="rest" hidden> ${redact(sh.rest,spoiler)}</span>”`:full;
   /* the tweet already is the whole quote: no verbatim block to reveal */
   const norm=s=>(s||'').toLowerCase().replace(/[^a-z]/g,'');
@@ -377,7 +382,7 @@ function card(p,spoiler,nth,ofN){
     if(k==='quote')show(verb,b,!(verb.classList.contains('show')));
     if(k==='orig'&&orig)show(orig,b,!orig.classList.contains('show'));
     if(k==='ctx')show(ctx,b,!ctx.classList.contains('show'));
-    if(k==='share'){const t=`${p.tweet||p.voice||voiceFor(p)||headlineFor(p)} — ${p.author}, ${p.date} via Chronicle`;navigator.clipboard?.writeText(t);b.textContent='Copied ✓';setTimeout(()=>b.textContent='Share',1200)}
+    if(k==='share'){const t=`${p.tweet||p.voice||voiceFor(p)||p.displayText||headlineFor(p)} — ${p.author}, ${p.date} via Chronicle`;navigator.clipboard?.writeText(t);b.textContent='Copied ✓';setTimeout(()=>b.textContent='Share',1200)}
     if(k==='link'){copyPostLink(p,b)}
     if(k==='card'){shareCard(p,b)}
     if(k==='save'){saved.has(p.id)?saved.delete(p.id):saved.add(p.id);saveSet();updateSavedCount();b.textContent=saved.has(p.id)?'Saved ✓':'Save'}});
@@ -563,6 +568,9 @@ function loadLeaflet(){
   return new Promise(res=>{
     try{
       if(!document.head)return res(false);
+      if(!document.querySelector('link[data-leaflet]')){
+        const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.dataset.leaflet='';document.head.appendChild(css);
+      }
       const s=document.createElement('script');
       s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
       s.onload=()=>res(true);s.onerror=()=>res(false);
@@ -635,8 +643,8 @@ function shareCard(p,b){
     g.fillText((p.handle||'@bonaparte')+' · '+fmtDate(p.date),210,198);
     g.strokeStyle='#e6ecf0';g.lineWidth=2;g.beginPath();g.moveTo(96,262);g.lineTo(984,262);g.stroke();
     g.fillStyle='#14171a';g.font='40px Georgia,serif';
-    let txt=(p.tweet||p.voice||'').replace(/\s+/g,' ').trim();
-    if(txt.length>640)txt=txt.slice(0,640).rsplit(' ',1)[0]+'…';
+    let txt=(p.tweet||p.voice||voiceFor(p)||p.displayText||headlineFor(p)).replace(/\s+/g,' ').trim();
+    if(txt.length>640){const cut=txt.slice(0,640),space=cut.lastIndexOf(' ');txt=(space>480?cut.slice(0,space):cut)+'…'}
     const yEnd=wrapText(g,txt,96,340,888,60);
     g.fillStyle='#657786';g.font='30px Georgia,serif';
     g.fillText((p.location?p.location+' · ':'')+fmtDate(p.date),96,Math.min(yEnd+70,1150));
@@ -703,13 +711,3 @@ function wireExplore(){
 wireExplore();
 applyTheme();
 updateSavedCount();
-if(typeof window!=='undefined'&&window.addEventListener){
-  window.addEventListener('hashchange',()=>{
-    let nav=null;
-    try{nav=parseHash(location.hash)}catch(e){}
-    if(!nav||!ready)return;
-    if(nav.kind==='date'&&nav.o&&iso(nav.o)!==iso(cur))goTo(nav.o);
-    else if(nav.kind==='post')goToPost(nav.id);
-  });
-}
-async function enterPost(id){$('#landing').style.display='none';$('#app').hidden=false;await goToPost(id);window.scrollTo(0,0)}

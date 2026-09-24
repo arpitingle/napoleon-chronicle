@@ -158,6 +158,8 @@ def check_tweets(posts):
         r"\bMay\b|\bMarch\b|\bMar\."
         r"|\b(?:Jan|Feb|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b")
     debris = re.compile(r"  |\s[,.]|,\s*,|(\s|--|-|\()\s*$")
+    broken = re.compile(r"\b(?:the|a|an)\s*[,.!?;:]|\bon the and the\b", re.I)
+    casing = re.compile(r"\bI\s+[A-ZÀ-Þ][a-zà-þ]{2,}|\b[a-z]{1,3}[A-Z][A-Za-z]+\b")
     for p in posts:
         t = p.get("tweet")
         if not t:
@@ -175,6 +177,12 @@ def check_tweets(posts):
         if debris.search(t):
             err("%s paraphrase tweet carries formatting debris: %r"
                 % (rid, t[:100]))
+        if broken.search(t):
+            err("%s paraphrase tweet has an incomplete phrase: %r"
+                % (rid, t[:120]))
+        if casing.search(t):
+            err("%s paraphrase tweet has suspicious OCR capitalization: %r"
+                % (rid, t[:120]))
 
 
 def check_referential(posts, idx):

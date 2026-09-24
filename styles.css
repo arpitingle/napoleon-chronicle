@@ -196,7 +196,7 @@ button{touch-action:manipulation}
   #backBtn{font-size:26px;padding:6px 6px}
   .tweet-actions{gap:16px}
   .post{padding:12px}
-  #siteFoot{font-size:11px;bottom:8px;max-width:94vw}
+  #siteFoot{font-size:11px;max-width:94vw}
 }
 /* ---------- explore / views ---------- */
 .explore-row{display:flex;gap:8px;margin-top:8px}
@@ -235,5 +235,5 @@ html[data-theme="dark"] .jump-row button,html[data-theme="dark"] .follow-btn,htm
 html[data-theme="dark"] .skip{background:#000}
 html[data-theme="dark"] #eventBanner{background:#1c3346}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-#siteFoot{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);max-width:92vw;text-align:center;font-size:12px;line-height:1.5;background:var(--bg);padding:4px 12px;z-index:5}
-#app{padding-bottom:44px}
+#siteFoot{max-width:92vw;text-align:center;font-size:12px;line-height:1.5;margin:8px auto 14px;padding:4px 12px}
+#app{padding-bottom:12px}
