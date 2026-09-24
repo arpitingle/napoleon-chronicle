@@ -36,15 +36,30 @@ vivid or consequential language is rewarded, bureaucratic boilerplate
 nothing clears the floor the document **sits out**. Coverage is therefore
 uneven by design — honest gaps, not filler.
 
+## The Lodi pipeline
+
+Lodi is the letter-to-tweet pipeline. `sources/tweet_paraphrases.json` holds
+one editor-written paraphrase per published letter record. Run
+`python3 sources/lodi.py` to apply the paraphrases, rebuild the shards, and
+verify coverage and archive integrity. The verifier fails if a published
+letter record has no tweet, a tweet points to no published record, or a tweet
+fails the voice, length, date-token, or formatting checks.
+
+The unit is the **archive record**, not a proven unique historical letter.
+Separate records can quote overlapping or duplicate source passages, and
+identical tweet wording can occur where the source text genuinely repeats.
+The pipeline flags repeated paraphrase text for editorial review; it does not
+silently merge records.
+
 ## Summaries
 
-The tweet is Napoleon in the first person. Where the project has moved
-past extraction, the tweet is a hand-written modern paraphrase of the
-whole letter in his voice (`sources/tweet_paraphrases.json`, one tweet per
-letter, ≤280 characters) — dramatization, not quotation, disclosed in the
-Source panel ("a modern paraphrase in his voice") with the verbatim quote
-always one tap away under Verbatim. Every paraphrase is grounded strictly
-in the letter's own content: no invented facts, people, or numbers.
+The tweet uses Napoleon's first-person voice. A Lodi paraphrase is a modern
+paraphrase of the published record, not a quotation. It is limited to what
+the surviving source text supports: when only an excerpt survives, it must
+not imply knowledge of the whole letter, and uncertain or damaged passages
+must be identified as such. No invented facts, people, or numbers. The
+verbatim excerpt remains available under **Verbatim**, with source and context
+available beside it.
 
 Where no paraphrase exists yet, the tweet falls back to an extractive
 first-person voice line (picked, never composed), then to the editorial
@@ -67,14 +82,12 @@ a resolvable addressee). Published via `context_overrides.json`, applied by
 stay out of `sources/*.txt` corpora and `data/nap_*.json` slices — they live
 only in the overrides file and the shards built from it.
 
-## Threads (retired)
+## Threads
 
-Long letters briefly shipped second tweets (`nap-YYYYMMDD-9X` thread twins).
-Retired: one letter, one tweet. Twins duplicated their parents too often,
-and the feature's complexity (cross-field dedupe, id ranges) outweighed a
-handful of extra posts. The builder is deleted; the lesson stays: any future
-multi-extract must pass twin-vs-parent containment checks in both
-directions before review.
+The archive does not publish multi-post letter threads. The interface must
+not group separate records just because they share an author and date; every
+record renders independently. A future thread feature would need explicit
+source-linked relationship metadata and editorial review.
 
 ## Labels
 

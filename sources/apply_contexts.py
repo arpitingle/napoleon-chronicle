@@ -66,8 +66,9 @@ def main():
                      "method": "narrative scene+frame+clause "
                                "(narrate_contexts.py) + editor review for "
                                "contexts; first-person extractive tweet "
-                               "lines for voices; hand LLM paraphrases for "
-                               "tweets; never invention beyond the letter"},
+                               "lines for voices; editor-written Lodi "
+                               "paraphrases grounded in surviving source "
+                               "text; no invented claims"},
            "contexts": contexts,
            "voices": tvoices,
            "tweets": tweets}

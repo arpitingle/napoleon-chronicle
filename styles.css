@@ -134,20 +134,6 @@ button{touch-action:manipulation}
 .verbatim .more{color:var(--accent);font-weight:600;font-size:13px;white-space:nowrap}
 .orig b,.ctx b{color:var(--ink)}
 
-/* ---------- threads ---------- */
-.thread{background:var(--card);border-top:1px solid var(--line-soft)}
-.thread .post{position:relative;border-top:0;border-bottom:1px solid var(--line-soft);padding-left:22px}
-.thread .post:last-child{border-bottom:0}
-.thread .post::before{content:"";position:absolute;left:39px;top:0;bottom:0;width:2px;background:var(--line);z-index:0}
-.thread .post:last-child::before{bottom:auto;height:52px}
-.thread .post .avatar{width:36px;height:36px;flex-basis:36px;font-size:15px}
-.thread .post .avatar .ava{width:36px;height:36px}
-/* The spine must hide BEHIND the avatar, never paint over it:
-   position:relative+z-index on .post pins each ::before to its own post,
-   and a positioned avatar with z-index sits above the line. */
-.thread .post .avatar,.thread .post .avatar .ava{position:relative;z-index:1}
-.tweet-head .t .tag{font-weight:600;color:var(--muted)}
-
 /* ---------- empty / error / modal ---------- */
 #emptyState{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
   padding:32px 24px;text-align:center;color:var(--muted);font-size:14px}

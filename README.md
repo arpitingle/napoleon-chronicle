@@ -37,6 +37,13 @@ in `sources/common.py`; editorial paraphrases, contexts, and voices live in
 `sources/tweet_paraphrases.json` and `sources/context_overrides.json`.
 Generated archive files are committed so the site serves as-is.
 
+The letter-to-tweet workflow is the **Lodi pipeline**. Add or edit one
+record-keyed paraphrase in `sources/tweet_paraphrases.json`, then run
+`python3 sources/lodi.py` to apply overrides, rebuild the published shards,
+and validate that every published letter record has exactly one mapped tweet.
+Paraphrases stay within the surviving source text; see [EDITORIAL.md](EDITORIAL.md)
+for the policy on excerpts, damaged text, and duplicate records.
+
 ## Notes
 
 - Only verified Napoleon-authored records are published. Counts are generated

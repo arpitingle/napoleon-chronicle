@@ -16,7 +16,7 @@ Run from anywhere:
   python3 sources/verify.py --check-urls   # also HEAD every archive.org link
 """
 import argparse, hashlib, json, os, re, sys
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import date, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -183,6 +183,49 @@ def check_tweets(posts):
         if casing.search(t):
             err("%s paraphrase tweet has suspicious OCR capitalization: %r"
                 % (rid, t[:120]))
+
+
+def check_lodi(posts):
+    """Every published letter record needs exactly one mapped paraphrase."""
+    by_id = {p.get("id"): p for p in posts}
+    letters = {p["id"] for p in posts
+               if "letter" in (p.get("documentType") or "letter").lower()}
+    ov_path = os.path.join(ROOT, "sources", "context_overrides.json")
+    try:
+        ov = json.load(open(ov_path, encoding="utf-8"))
+    except Exception as e:
+        err("Lodi pipeline cannot read context_overrides.json: %s" % e)
+        return
+    tweets = ov.get("tweets", {})
+    missing = sorted(letters - set(tweets))
+    if missing:
+        err("Lodi pipeline: %d published letter record(s) lack a tweet: %s"
+            % (len(missing), missing[:10]))
+    stray = sorted(set(tweets) - set(by_id))
+    if stray:
+        err("Lodi pipeline: %d tweet(s) point to no published record: %s"
+            % (len(stray), stray[:10]))
+    # A repeated paraphrase can hide duplicate records, so stop the build and
+    # require an editorial decision instead of publishing it silently.
+    repeated = [(t, n) for t, n in Counter(tweets.values()).items() if n > 1]
+    if repeated:
+        err("Lodi pipeline: paraphrase text repeats across %d phrase(s); "
+            "review whether the source records are duplicates" % len(repeated))
+    if not missing and not stray:
+        print("Lodi pipeline: %d letter records have one mapped tweet each"
+              % len(letters))
+    openings = defaultdict(list)
+    for p in posts:
+        if p.get("id") not in letters:
+            continue
+        body = re.sub(r"\W+", " ", (p.get("displayText") or "").lower()).strip()
+        key = (p.get("date"), p.get("sourceUrl"), body[:120])
+        if key[2]:
+            openings[key].append(p["id"])
+    duplicate_openings = [ids for ids in openings.values() if len(ids) > 1]
+    if duplicate_openings:
+        err("Lodi pipeline: same-date letter records repeat a source opening; "
+            "review duplicate IDs: %s" % duplicate_openings[:5])
 
 
 def check_referential(posts, idx):
@@ -395,6 +438,7 @@ def main():
         check_referential(posts, idx)
         check_voices(posts)
         check_tweets(posts)
+        check_lodi(posts)
         check_coverage(posts, idx)
         check_content(posts, idx)
         check_app_refs()

@@ -9,6 +9,11 @@ NAP = {"author": "Napoleon Bonaparte", "handle": "@bonaparte", "accountType": "p
 # exact duplicates filed twice, or non-letter material (contents pages,
 # chapter prefaces) parsed as letters. Skipped loudly by build_index.
 DROP_IDS = {
+    "nap-17960621-25",  # duplicate excerpt of the June 21 Directory letter kept as nap-17960621-16
+    "nap-18000620-81",  # shorter duplicate excerpt of nap-18000620-39
+    "nap-18080501-421", # shorter duplicate excerpt of nap-18080501-134
+    "nap-18080707-424", # shorter duplicate excerpt of nap-18080707-136
+    "nap-17960401-10",  # exact duplicate excerpt of nap-17960414-04; keep one timeline entry
     "nap-18150226-77",   # dup of nap-18150226-641 (same Elba farewell body)
     "nap-18080217-127",  # dup of nap-18080217-412 (same Caulaincourt letter)
     "nap-18060201-187",  # Tarbell contents page, not the proclamation

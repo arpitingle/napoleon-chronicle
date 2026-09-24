@@ -225,15 +225,9 @@ function render(){
     const gn=$('#goNear');if(gn)gn.onclick=ev=>{ev.preventDefault();goTo(parseIso(n.date))};
   }else es.hidden=true;
   if(replayOn&&list.length){let i=0;const step=()=>{if(i<list.length){feed.appendChild(card(list[i],spoiler));i++;setTimeout(step,500)}};step();return}
-  let run=[];
-  const flush=()=>{if(!run.length)return;
-    if(run.length>1){const w=document.createElement('div');w.className='thread';
-      run.forEach((p,i)=>{w.appendChild(card(p,spoiler,i+1,run.length))});
-      feed.appendChild(w)}else feed.appendChild(card(run[0],spoiler));
-    run=[]};
-  list.forEach(p=>{const l=run[run.length-1];
-    if(l&&l.author===p.author&&l.date===p.date)run.push(p);else{flush();run=[p]}});
-  flush();
+  // Same-author records on one date are independent archive entries, not a
+  // conversation thread. A thread needs explicit relationship metadata.
+  list.forEach(p=>feed.appendChild(card(p,spoiler)));
 }
 /* ---- context is the tweet; verbatim is one tap down ----
    The visible line is editorial context (captionFor) or, where the context
@@ -346,11 +340,10 @@ function voiceFor(p){
   if(best.length>200){const cut=best.slice(0,200);const k=cut.lastIndexOf(' ');best=(k>120?cut.slice(0,k):cut).trimEnd()+'…'}
   return best;
 }
-function card(p,spoiler,nth,ofN){
-  const d=document.createElement('article');d.className='post'+(ofN>1?' in-thread':'');
+function card(p,spoiler){
+  const d=document.createElement('article');d.className='post';
   d.id='p-'+p.id;
   const v=p.accountType==='person'?'<span class="verified">✔</span>':'';
-  const threadTag=ofN>1?`<span class="tag"> · 🧵 ${nth}/${ofN}</span>`:'';
   const voice=p.voice||voiceFor(p);
   const head=redact(headlineFor(p),spoiler);
   const full=redact(p.displayText,spoiler),sh=shortHTML(p.displayText);
@@ -362,11 +355,10 @@ function card(p,spoiler,nth,ofN){
   const norm=s=>(s||'').toLowerCase().replace(/[^a-z]/g,'');
   const dupQuote=!sh&&norm(tweet)===norm(full);
   const rc=p.reactions?Object.keys(p.reactions).length:0;
-  const showFollow=!ofN||ofN===1||nth===1;   /* one Follow per thread, not eight */
   d.innerHTML=`<div class="avatar">${avatarHTML(p.author)}</div>
   <div class="tweet-body">
-    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span><span class="t">${threadTag}</span>
-    ${showFollow?`<button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button>`:''}</div>
+    <div class="tweet-head"><button class="author" data-a="${p.author}">${p.author}</button>${v}<span class="h">${p.handle}</span>
+    <button class="follow-btn">${followed.has(p.author)?'Following':'Follow'}</button></div>
     <div class="tweet-text">${tweet}</div>
     ${dupQuote?'':`<div class="verbatim" hidden>${quoteHtml}</div>`}
     ${p.originalText?`<div class="orig"><b>Original (${p.originalLanguage}):</b> ${p.originalText}</div>`:''}
